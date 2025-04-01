@@ -843,6 +843,8 @@ canvas#monthlyChart {
   transition: transform 0.2s;
   margin-top: 0.5rem;
   align-self: flex-end;
+  display: block; /* Đảm bảo nút hiển thị */
+  border: 1px solid #fff; /* Thêm viền để dễ nhìn */
 }
 
 .transaction-box .edit-btn:hover {
@@ -1571,29 +1573,52 @@ function updateMonthlyChart(filteredData) {
       note: item.note || ''
     };
 
-    transactionBox.innerHTML = `
-      <div style="display: flex; justify-content: space-between; width: 100%;">
-        <div style="flex: 1;">
-          <div class="date">${safeItem.date}</div>
-          <div class="amount" style="color: ${amountColor}">${safeItem.amount.toLocaleString('vi-VN')}đ</div>
-          <div class="content">Nội dung: ${safeItem.content}${safeItem.note ? ` (${safeItem.note})` : ''}</div>
+    // Thêm nút "Sửa" vào HTML
+    try {
+      transactionBox.innerHTML = `
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+          <div style="flex: 1;">
+            <div class="date">${safeItem.date}</div>
+            <div class="amount" style="color: ${amountColor}">${safeItem.amount.toLocaleString('vi-VN')}đ</div>
+            <div class="content">Nội dung: ${safeItem.content}${safeItem.note ? ` (${safeItem.note})` : ''}</div>
+          </div>
+          <div style="flex: 1; text-align: right;">
+            <div class="type ${typeClass}">Phân loại: ${safeItem.type}</div>
+            <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
+          </div>
         </div>
-        <div style="flex: 1; text-align: right;">
-          <div class="type ${typeClass}">Phân loại: ${safeItem.type}</div>
-          <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
+        <button class="edit-btn" data-transaction='${JSON.stringify(safeItem)}'>Sửa</button>
+      `;
+      container.appendChild(transactionBox);
+      console.log("Đã thêm giao dịch vào DOM: ", safeItem);
+    } catch (error) {
+      console.error("Lỗi khi thêm giao dịch vào DOM: ", error);
+      transactionBox.innerHTML = `
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+          <div style="flex: 1;">
+            <div class="date">${safeItem.date}</div>
+            <div class="amount" style="color: ${amountColor}">${safeItem.amount.toLocaleString('vi-VN')}đ</div>
+            <div class="content">Nội dung: ${safeItem.content}${safeItem.note ? ` (${safeItem.note})` : ''}</div>
+          </div>
+          <div style="flex: 1; text-align: right;">
+            <div class="type ${typeClass}">Phân loại: ${safeItem.type}</div>
+            <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
+          </div>
         </div>
-      </div>
-      <button class="edit-btn" data-transaction='${JSON.stringify(safeItem)}'>Sửa</button>
-    `;
-    container.appendChild(transactionBox);
+        <div style="color: red;">Lỗi: Không thể thêm nút Sửa</div>
+      `;
+      container.appendChild(transactionBox);
+    }
   });
 
   // Gán lại sự kiện click cho các nút "Sửa" sau khi thêm vào DOM
   const editButtons = document.querySelectorAll('.edit-btn');
+  console.log("Số lượng nút Sửa được tìm thấy: ", editButtons.length);
   editButtons.forEach(button => {
     button.addEventListener('click', function() {
       try {
         const transaction = JSON.parse(this.getAttribute('data-transaction'));
+        console.log("Mở modal chỉnh sửa cho giao dịch: ", transaction);
         openEditModal(transaction);
       } catch (error) {
         console.error("Lỗi khi parse dữ liệu giao dịch: ", error);
