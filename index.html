@@ -1623,13 +1623,18 @@ function closeEditForm() {
 // ✅ Lưu giao dịch đã chỉnh sửa
 async function saveTransaction(updatedTransaction) {
   try {
-    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
+    const response = await fetch(`${apiUrl}`, { // Bỏ query string trong URL, chuyển vào body
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(updatedTransaction)
+      body: JSON.stringify({
+        action: "updateTransaction",
+        sheetId: sheetId,
+        ...updatedTransaction
+      })
     });
+
     const result = await response.json();
     console.log("Update result: ", result);
     if (result.error) {
