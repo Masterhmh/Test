@@ -1623,18 +1623,13 @@ function closeEditForm() {
 // ✅ Lưu giao dịch đã chỉnh sửa
 async function saveTransaction(updatedTransaction) {
   try {
-    const response = await fetch(`${apiUrl}`, { // Bỏ query string trong URL, chuyển vào body
+    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        action: "updateTransaction",
-        sheetId: sheetId,
-        ...updatedTransaction
-      })
+      body: JSON.stringify(updatedTransaction)
     });
-
     const result = await response.json();
     console.log("Update result: ", result);
     if (result.error) {
@@ -1648,6 +1643,7 @@ async function saveTransaction(updatedTransaction) {
     alert("Lỗi khi cập nhật giao dịch: " + error.message);
   }
 }
+
 // ✅ Khởi tạo khi tải trang
 document.addEventListener('DOMContentLoaded', function() {
   console.log("Document loaded, initializing...");
