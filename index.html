@@ -1459,7 +1459,7 @@ function updateMonthlyChart(filteredData) {
     monthlyLegend.appendChild(column); // Chỉ thêm 1 cột vào monthlyLegend
 }
 
-  window.fetchTransactions = async function() {
+ window.fetchTransactions = async function() {
   const transactionDate = document.getElementById('transactionDate').value;
   console.log("Fetching transactions for date: " + transactionDate);
   if (!transactionDate) {
@@ -1468,7 +1468,6 @@ function updateMonthlyChart(filteredData) {
   }
 
   try {
-    // Thêm timeout cho fetch để tránh treo
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout sau 5 giây
 
@@ -1484,14 +1483,12 @@ function updateMonthlyChart(filteredData) {
       throw new Error(transactionData.error);
     }
 
-    // Kiểm tra dữ liệu trả về
     if (!Array.isArray(transactionData)) {
       throw new Error("Dữ liệu giao dịch không hợp lệ, cần một mảng!");
     }
 
-    // Đảm bảo mỗi giao dịch có đầy đủ các thuộc tính cần thiết
     const validatedData = transactionData.map((item, index) => ({
-      id: item.id || `temp-id-${index}`, // Tạo ID tạm nếu không có
+      id: item.id || `temp-id-${index}`,
       date: item.date || transactionDate,
       content: item.content || 'Không có nội dung',
       amount: Number(item.amount) || 0,
@@ -1513,11 +1510,17 @@ function updateMonthlyChart(filteredData) {
   }
 };
     
-   function displayTransactions(data) {
+   // Biến toàn cục để lưu trữ dữ liệu giao dịch
+let transactionDataMap = {};
+
+function displayTransactions(data) {
   console.log("Dữ liệu nhận được: ", data);
   const container = document.getElementById('transactionsContainer');
   const summaryContainer = document.getElementById('dailySummary');
   container.innerHTML = '';
+
+  // Xóa dữ liệu cũ trong transactionDataMap
+  transactionDataMap = {};
 
   // Kiểm tra nếu không có dữ liệu hoặc có lỗi
   if (data.error || !data || data.length === 0) {
@@ -1588,9 +1591,11 @@ function updateMonthlyChart(filteredData) {
       note: item.note || ''
     };
 
+    // Lưu dữ liệu giao dịch vào transactionDataMap
+    transactionDataMap[safeItem.id] = safeItem;
+
     // Thêm giao dịch và nút "Sửa" vào HTML
     try {
-      const escapedItem = JSON.stringify(safeItem).replace(/'/g, "\\'").replace(/"/g, '"');
       transactionBox.innerHTML = `
         <div style="display: flex; justify-content: space-between; width: 100%;">
           <div style="flex: 1;">
@@ -1603,7 +1608,7 @@ function updateMonthlyChart(filteredData) {
             <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
           </div>
         </div>
-        <button class="edit-btn" data-transaction="${escapedItem}">Sửa</button>
+        <button class="edit-btn" data-transaction-id="${safeItem.id}">Sửa</button>
       `;
       container.appendChild(transactionBox);
       console.log(`Đã thêm giao dịch ${index + 1} vào DOM: `, safeItem);
@@ -1637,14 +1642,15 @@ function updateMonthlyChart(filteredData) {
   // Gán sự kiện click cho các nút "Sửa"
   editButtons.forEach((button, btnIndex) => {
     button.addEventListener('click', function() {
-      try {
-        const transaction = JSON.parse(this.getAttribute('data-transaction'));
-        console.log(`Mở modal chỉnh sửa cho giao dịch ${btnIndex + 1}: `, transaction);
-        openEditModal(transaction);
-      } catch (error) {
-        console.error(`Lỗi khi parse dữ liệu giao dịch ${btnIndex + 1}: `, error);
-        alert("Lỗi khi mở modal chỉnh sửa: " + error.message);
+      const transactionId = this.getAttribute('data-transaction-id');
+      const transaction = transactionDataMap[transactionId];
+      if (!transaction) {
+        console.error(`Không tìm thấy dữ liệu giao dịch cho ID: ${transactionId}`);
+        alert("Lỗi: Không tìm thấy dữ liệu giao dịch để chỉnh sửa!");
+        return;
       }
+      console.log(`Mở modal chỉnh sửa cho giao dịch ${btnIndex + 1}: `, transaction);
+      openEditModal(transaction);
     });
   });
 }
@@ -1688,16 +1694,14 @@ function updateMonthlyChart(filteredData) {
   const categorySelect = document.getElementById('editCategory');
   const noteInput = document.getElementById('editNote');
 
-  // Điền dữ liệu vào form với giá trị mặc định nếu thiếu
   transactionIdInput.value = transaction.id || '';
   contentInput.value = transaction.content || '';
   amountInput.value = transaction.amount || 0;
   typeSelect.value = transaction.type || 'Chi tiêu';
   noteInput.value = transaction.note || '';
 
-  // Lấy danh sách phân loại chi tiết và điền vào select
   const categories = await fetchCategories();
-  categorySelect.innerHTML = ''; // Xóa các tùy chọn cũ
+  categorySelect.innerHTML = '';
   if (categories.length === 0) {
     const option = document.createElement('option');
     option.value = '';
@@ -1715,10 +1719,8 @@ function updateMonthlyChart(filteredData) {
     });
   }
 
-  // Hiển thị modal
   modal.style.display = 'flex';
 
-  // Xử lý sự kiện hủy
   document.getElementById('cancelEditBtn').onclick = () => {
     modal.style.display = 'none';
     form.reset();
