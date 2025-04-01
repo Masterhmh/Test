@@ -1467,10 +1467,28 @@ function updateMonthlyChart(filteredData) {
     const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`);
     const transactionData = await response.json();
     console.log("Transaction data received: ", transactionData);
+
     if (transactionData.error) {
       throw new Error(transactionData.error);
     }
-    displayTransactions(transactionData);
+
+    // Kiểm tra dữ liệu trả về
+    if (!Array.isArray(transactionData)) {
+      throw new Error("Dữ liệu giao dịch không hợp lệ, cần một mảng!");
+    }
+
+    // Đảm bảo mỗi giao dịch có đầy đủ các thuộc tính cần thiết
+    const validatedData = transactionData.map(item => ({
+      id: item.id || '', // Đảm bảo có id, nếu không thì để trống
+      date: item.date || transactionDate,
+      content: item.content || 'Không có nội dung',
+      amount: Number(item.amount) || 0,
+      type: item.type || 'Chi tiêu',
+      category: item.category || 'Không có phân loại',
+      note: item.note || ''
+    }));
+
+    displayTransactions(validatedData);
   } catch (error) {
     console.error("Error fetching transactions: ", error.message);
     alert("Lỗi khi lấy dữ liệu giao dịch: " + error.message);
@@ -1483,6 +1501,8 @@ function updateMonthlyChart(filteredData) {
   const container = document.getElementById('transactionsContainer');
   const summaryContainer = document.getElementById('dailySummary');
   container.innerHTML = '';
+
+  // Kiểm tra nếu không có dữ liệu hoặc có lỗi
   if (data.error || !data || data.length === 0) {
     console.log("Không có giao dịch để hiển thị");
     container.innerHTML = '<div>Không có giao dịch trong ngày này</div>';
@@ -1502,6 +1522,8 @@ function updateMonthlyChart(filteredData) {
     `;
     return;
   }
+
+  // Tính tổng thu nhập, chi tiêu và số dư
   let totalIncome = 0;
   let totalExpense = 0;
   data.forEach(item => {
@@ -1512,6 +1534,8 @@ function updateMonthlyChart(filteredData) {
     }
   });
   const balance = totalIncome - totalExpense;
+
+  // Cập nhật tổng quan
   summaryContainer.innerHTML = `
     <div class="stat-box income">
       <div class="title">Tổng thu nhập</div>
@@ -1526,6 +1550,8 @@ function updateMonthlyChart(filteredData) {
       <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
     </div>
   `;
+
+  // Hiển thị danh sách giao dịch (giới hạn 10 giao dịch)
   console.log("Hiển thị giao dịch: ", data.slice(0, 10));
   const limitedData = data.slice(0, 10);
   limitedData.forEach(item => {
@@ -1533,28 +1559,46 @@ function updateMonthlyChart(filteredData) {
     transactionBox.className = 'transaction-box';
     const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
     const typeClass = item.type === 'Thu nhập' ? 'income' : 'expense';
+
+    // Đảm bảo dữ liệu đầy đủ trước khi hiển thị
+    const safeItem = {
+      id: item.id || '',
+      date: item.date || 'Không có ngày',
+      content: item.content || 'Không có nội dung',
+      amount: item.amount || 0,
+      type: item.type || 'Chi tiêu',
+      category: item.category || 'Không có phân loại',
+      note: item.note || ''
+    };
+
     transactionBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; width: 100%;">
         <div style="flex: 1;">
-          <div class="date">${item.date}</div>
-          <div class="amount" style="color: ${amountColor}">${item.amount.toLocaleString('vi-VN')}đ</div>
-          <div class="content">Nội dung: ${item.content}${item.note ? ` (${item.note})` : ''}</div>
+          <div class="date">${safeItem.date}</div>
+          <div class="amount" style="color: ${amountColor}">${safeItem.amount.toLocaleString('vi-VN')}đ</div>
+          <div class="content">Nội dung: ${safeItem.content}${safeItem.note ? ` (${safeItem.note})` : ''}</div>
         </div>
         <div style="flex: 1; text-align: right;">
-          <div class="type ${typeClass}">Phân loại: ${item.type}</div>
-          <div class="category">Phân loại chi tiết: ${item.category}</div>
+          <div class="type ${typeClass}">Phân loại: ${safeItem.type}</div>
+          <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
         </div>
       </div>
-      <button class="edit-btn" data-transaction='${JSON.stringify(item)}'>Sửa</button>
+      <button class="edit-btn" data-transaction='${JSON.stringify(safeItem)}'>Sửa</button>
     `;
     container.appendChild(transactionBox);
   });
 
-  // Thêm sự kiện click cho các nút "Sửa"
-  document.querySelectorAll('.edit-btn').forEach(button => {
+  // Gán lại sự kiện click cho các nút "Sửa" sau khi thêm vào DOM
+  const editButtons = document.querySelectorAll('.edit-btn');
+  editButtons.forEach(button => {
     button.addEventListener('click', function() {
-      const transaction = JSON.parse(this.getAttribute('data-transaction'));
-      openEditModal(transaction);
+      try {
+        const transaction = JSON.parse(this.getAttribute('data-transaction'));
+        openEditModal(transaction);
+      } catch (error) {
+        console.error("Lỗi khi parse dữ liệu giao dịch: ", error);
+        alert("Lỗi khi mở modal chỉnh sửa: " + error.message);
+      }
     });
   });
 }
@@ -1585,8 +1629,8 @@ function updateMonthlyChart(filteredData) {
   const categorySelect = document.getElementById('editCategory');
   const noteInput = document.getElementById('editNote');
 
-  // Điền dữ liệu vào form
-  transactionIdInput.value = transaction.id || ''; // Giả sử mỗi giao dịch có một ID duy nhất
+  // Điền dữ liệu vào form với giá trị mặc định nếu thiếu
+  transactionIdInput.value = transaction.id || '';
   contentInput.value = transaction.content || '';
   amountInput.value = transaction.amount || 0;
   typeSelect.value = transaction.type || 'Chi tiêu';
@@ -1595,15 +1639,22 @@ function updateMonthlyChart(filteredData) {
   // Lấy danh sách phân loại chi tiết và điền vào select
   const categories = await fetchCategories();
   categorySelect.innerHTML = ''; // Xóa các tùy chọn cũ
-  categories.forEach(category => {
+  if (categories.length === 0) {
     const option = document.createElement('option');
-    option.value = category;
-    option.textContent = category;
-    if (category === transaction.category) {
-      option.selected = true;
-    }
+    option.value = '';
+    option.textContent = 'Không có phân loại';
     categorySelect.appendChild(option);
-  });
+  } else {
+    categories.forEach(category => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = category;
+      if (category === transaction.category) {
+        option.selected = true;
+      }
+      categorySelect.appendChild(option);
+    });
+  }
 
   // Hiển thị modal
   modal.style.display = 'flex';
