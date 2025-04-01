@@ -605,41 +605,6 @@
   white-space: normal; /* Cho phép xuống dòng nếu ghi chú dài */
   word-wrap: break-word; /* Đảm bảo từ dài không tràn */
 }
-.transaction-box .edit-btn {
-  background: linear-gradient(135deg, #FFA500, #FF4500);
-  padding: 0.4rem 1rem;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  cursor: pointer;
-}
-
-.transaction-box .save-btn {
-  background: linear-gradient(135deg, #10B981, #059669);
-  padding: 0.4rem 1rem;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  cursor: pointer;
-}
-
-.transaction-box .edit-form {
-  display: none;
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.transaction-box .edit-form.active {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.transaction-box .edit-form input,
-.transaction-box .edit-form select {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #E5E7EB;
-}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
@@ -1172,58 +1137,20 @@
     function displayTransactions(data) {
   console.log("Dữ liệu nhận được: ", data);
   const container = document.getElementById('transactionsContainer');
-  const summaryContainer = document.getElementById('dailySummary');
-  container.innerHTML = '';
+  container.innerHTML = ''; // Xóa nội dung cũ
   if (data.error || !data || data.length === 0) {
     console.log("Không có giao dịch để hiển thị");
     container.innerHTML = '<div>Không có giao dịch trong ngày này</div>';
-    summaryContainer.innerHTML = `
-      <div class="stat-box income">
-        <div class="title">Tổng thu nhập</div>
-        <div class="amount no-data">Không có dữ liệu</div>
-      </div>
-      <div class="stat-box expense">
-        <div class="title">Tổng chi tiêu</div>
-        <div class="amount no-data">Không có dữ liệu</div>
-      </div>
-      <div class="stat-box balance">
-        <div class="title">Số dư</div>
-        <div class="amount no-data">Không có dữ liệu</div>
-      </div>
-    `;
     return;
   }
-  let totalIncome = 0;
-  let totalExpense = 0;
-  data.forEach(item => {
-    if (item.type === 'Thu nhập') {
-      totalIncome += item.amount;
-    } else if (item.type === 'Chi tiêu') {
-      totalExpense += item.amount;
-    }
-  });
-  const balance = totalIncome - totalExpense;
-  summaryContainer.innerHTML = `
-    <div class="stat-box income">
-      <div class="title">Tổng thu nhập</div>
-      <div class="amount">${totalIncome.toLocaleString('vi-VN')}đ</div>
-    </div>
-    <div class="stat-box expense">
-      <div class="title">Tổng chi tiêu</div>
-      <div class="amount">${totalExpense.toLocaleString('vi-VN')}đ</div>
-    </div>
-    <div class="stat-box balance">
-      <div class="title">Số dư</div>
-      <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
-    </div>
-  `;
+
   console.log("Hiển thị giao dịch: ", data.slice(0, 10));
-  const limitedData = data.slice(0, 10);
-  limitedData.forEach((item, index) => {
+  const limitedData = data.slice(0, 10); // Giới hạn hiển thị 10 giao dịch
+  limitedData.forEach(item => {
     const transactionBox = document.createElement('div');
     transactionBox.className = 'transaction-box';
-    const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
-    const typeClass = item.type === 'Thu nhập' ? 'income' : 'expense';
+    const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444'; // Xanh cho thu nhập, đỏ cho chi tiêu
+    const typeClass = item.type === 'Thu nhập' ? 'income' : 'expense'; // Add class based on type
     transactionBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; width: 100%;">
         <div style="flex: 1;">
@@ -1236,64 +1163,9 @@
           <div class="category">Phân loại chi tiết: ${item.category}</div>
         </div>
       </div>
-      <button class="edit-btn" onclick="toggleEditForm(${index})">Sửa</button>
-      <div class="edit-form" id="edit-form-${index}">
-        <input type="text" id="edit-content-${index}" value="${item.content}" placeholder="Nội dung">
-        <input type="number" id="edit-amount-${index}" value="${item.amount}" placeholder="Số tiền">
-        <select id="edit-type-${index}">
-          <option value="Thu nhập" ${item.type === 'Thu nhập' ? 'selected' : ''}>Thu nhập</option>
-          <option value="Chi tiêu" ${item.type === 'Chi tiêu' ? 'selected' : ''}>Chi tiêu</option>
-        </select>
-        <input type="text" id="edit-category-${index}" value="${item.category}" placeholder="Phân loại chi tiết">
-        <button class="save-btn" onclick="saveTransaction(${index}, '${item.date}')">Lưu</button>
-      </div>
     `;
     container.appendChild(transactionBox);
   });
-}
-
-// Hàm để bật/tắt form chỉnh sửa
-function toggleEditForm(index) {
-  const editForm = document.getElementById(`edit-form-${index}`);
-  editForm.classList.toggle('active');
-}
-
-// Hàm để lưu giao dịch đã chỉnh sửa
-async function saveTransaction(index, date) {
-  const content = document.getElementById(`edit-content-${index}`).value;
-  const amount = parseInt(document.getElementById(`edit-amount-${index}`).value);
-  const type = document.getElementById(`edit-type-${index}`).value;
-  const category = document.getElementById(`edit-category-${index}`).value;
-
-  if (!content || !amount || !type || !category) {
-    alert("Vui lòng điền đầy đủ thông tin!");
-    return;
-  }
-
-  const updatedTransaction = {
-    date: date,
-    content: content,
-    amount: amount,
-    type: type,
-    category: category
-  };
-
-  try {
-    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedTransaction)
-    });
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error);
-    }
-    alert("Cập nhật giao dịch thành công!");
-    window.fetchTransactions(); // Làm mới danh sách giao dịch
-  } catch (error) {
-    console.error("Lỗi khi cập nhật giao dịch: ", error);
-    alert("Lỗi khi cập nhật giao dịch: " + error.message);
-  }
 }
 
     function getCurrentMonthRange() {
