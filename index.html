@@ -587,7 +587,7 @@ canvas#monthlyChart {
   white-space: normal;
   word-wrap: break-word;
 }
-	  .transaction-box .edit-btn {
+.transaction-box .edit-btn {
   background: linear-gradient(135deg, #FFA500, #FF4500);
   padding: 0.4rem 1rem;
   font-size: 0.9rem;
@@ -1368,11 +1368,31 @@ function updateMonthlyChart(filteredData) {
   }
 };
     
-   function displayTransactions(data) {
+   // Hàm lấy danh sách danh mục từ API
+async function fetchCategories() {
+  try {
+    const response = await fetch(`${apiUrl}?action=getCategories&sheetId=${sheetId}`);
+    const data = await response.json();
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    return data.categories || [];
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách danh mục: ", error);
+    return [];
+  }
+}
+
+// Sửa hàm displayTransactions
+async function displayTransactions(data) {
   console.log("Dữ liệu nhận được: ", data);
   const container = document.getElementById('transactionsContainer');
   const summaryContainer = document.getElementById('dailySummary');
   container.innerHTML = '';
+
+  // Lấy danh sách danh mục
+  const categories = await fetchCategories();
+
   if (data.error || !data || data.length === 0) {
     console.log("Không có giao dịch để hiển thị");
     container.innerHTML = '<div>Không có giao dịch trong ngày này</div>';
@@ -1392,6 +1412,7 @@ function updateMonthlyChart(filteredData) {
     `;
     return;
   }
+
   let totalIncome = 0;
   let totalExpense = 0;
   data.forEach(item => {
@@ -1416,6 +1437,7 @@ function updateMonthlyChart(filteredData) {
       <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
     </div>
   `;
+
   console.log("Hiển thị giao dịch: ", data.slice(0, 10));
   const limitedData = data.slice(0, 10);
   limitedData.forEach((item, index) => {
@@ -1423,6 +1445,12 @@ function updateMonthlyChart(filteredData) {
     transactionBox.className = 'transaction-box';
     const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
     const typeClass = item.type === 'Thu nhập' ? 'income' : 'expense';
+
+    // Tạo danh sách tùy chọn cho dropdown "Phân loại chi tiết"
+    let categoryOptions = categories.map(cat => 
+      `<option value="${cat}" ${item.category === cat ? 'selected' : ''}>${cat}</option>`
+    ).join('');
+
     transactionBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; width: 100%;">
         <div style="flex: 1;">
@@ -1443,8 +1471,10 @@ function updateMonthlyChart(filteredData) {
           <option value="Thu nhập" ${item.type === 'Thu nhập' ? 'selected' : ''}>Thu nhập</option>
           <option value="Chi tiêu" ${item.type === 'Chi tiêu' ? 'selected' : ''}>Chi tiêu</option>
         </select>
-        <input type="text" id="edit-category-${index}" value="${item.category}" placeholder="Phân loại chi tiết">
-        <button class="save-btn" onclick="saveTransaction(${index}, '${item.date}')">Lưu</button>
+        <select id="edit-category-${index}">
+          ${categoryOptions}
+        </select>
+        <button class="save-btn" onclick="saveTransaction(${index}, '${item.date}', '${item.content}', ${item.amount})">Lưu</button>
       </div>
     `;
     container.appendChild(transactionBox);
@@ -1457,8 +1487,7 @@ function toggleEditForm(index) {
   editForm.classList.toggle('active');
 }
 
-// Hàm để lưu giao dịch đã chỉnh sửa
-async function saveTransaction(index, date) {
+async function saveTransaction(index, date, oldContent, oldAmount) {
   const content = document.getElementById(`edit-content-${index}`).value;
   const amount = parseInt(document.getElementById(`edit-amount-${index}`).value);
   const type = document.getElementById(`edit-type-${index}`).value;
@@ -1471,6 +1500,8 @@ async function saveTransaction(index, date) {
 
   const updatedTransaction = {
     date: date,
+    oldContent: oldContent,
+    oldAmount: oldAmount,
     content: content,
     amount: amount,
     type: type,
@@ -1478,10 +1509,10 @@ async function saveTransaction(index, date) {
   };
 
   try {
-    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedTransaction)
+    const queryString = new URLSearchParams(updatedTransaction).toString();
+    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}&${queryString}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
     });
     const result = await response.json();
     if (result.error) {
