@@ -534,36 +534,20 @@ canvas#monthlyChart {
 }
 
 .transaction-box {
-  display: flex;
-  flex-direction: column; /* Đặt flex-direction thành column để nút Sửa nằm dưới nội dung */
-  background: #fff;
-  border-radius: 12px;
   padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
-}
-
-.transaction-content {
+  max-width: 600px;
+  border-radius: 16px;
+  font-size: 1rem;
   display: flex;
   flex-direction: column;
-  width: 100%;
-}
-
-.transaction-box .edit-btn {
-  background: var(--primary-color);
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #F8FAFC, #E5E7EB);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s;
-  margin-top: 0.5rem;
-  align-self: flex-end; /* Đặt nút Sửa ở bên phải */
-  display: block !important; /* Đảm bảo nút hiển thị */
-  border: 2px solid #fff; /* Thêm viền để dễ nhìn */
-  z-index: 10; /* Đảm bảo nút không bị che */
-  visibility: visible !important; /* Đảm bảo nút không bị ẩn */
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .transaction-box:hover { 
@@ -762,112 +746,6 @@ canvas#monthlyChart {
   .qr-caption { margin-top: 0.5rem; }
   .cta-button { padding: 0.75rem 1.5rem; font-size: 1rem; margin-top: 0; }
 }
-    /* Nhóm: Modal cho chỉnh sửa giao dịch */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1001;
-}
-
-.modal-content {
-  background: var(--card-bg);
-  padding: 1.5rem;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.modal-content h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: var(--text-color);
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: var(--text-color);
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 0.6rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #E5E7EB;
-  background-color: #F8FAFC;
-  transition: border-color 0.3s;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.form-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.form-buttons button {
-  padding: 0.6rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-#cancelEditBtn {
-  background: #E5E7EB;
-  color: var(--text-color);
-}
-
-#saveEditBtn {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-  color: white;
-}
-
-.form-buttons button:hover {
-  transform: translateY(-2px);
-}
-
-/* Thêm kiểu cho nút Sửa trong transaction box */
-.transaction-box .edit-btn {
-  background: var(--primary-color);
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-  margin-top: 0.5rem;
-  align-self: flex-end;
-  display: block !important; /* Đảm bảo nút hiển thị */
-  border: 2px solid #fff; /* Thêm viền để dễ nhìn */
-  z-index: 10; /* Đảm bảo nút không bị che */
-  visibility: visible !important; /* Đảm bảo nút không bị ẩn */
-}
-
-.transaction-box .edit-btn:hover {
-  transform: translateY(-2px);
-}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
@@ -1026,45 +904,6 @@ canvas#monthlyChart {
   </div>
   <div class="transactions-list" id="transactionsContainer">
     <!-- Giao dịch sẽ được hiển thị ở đây -->
-  </div>
-
-  <!-- Modal để chỉnh sửa giao dịch -->
-  <div id="editTransactionModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <h2>Sửa giao dịch</h2>
-      <form id="editTransactionForm">
-        <input type="hidden" id="editTransactionId" name="transactionId">
-        <div class="form-group">
-          <label for="editContent">Nội dung:</label>
-          <input type="text" id="editContent" name="content" required>
-        </div>
-        <div class="form-group">
-          <label for="editAmount">Số tiền (đ):</label>
-          <input type="number" id="editAmount" name="amount" min="0" required>
-        </div>
-        <div class="form-group">
-          <label for="editType">Phân loại:</label>
-          <select id="editType" name="type" required>
-            <option value="Thu nhập">Thu nhập</option>
-            <option value="Chi tiêu">Chi tiêu</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="editCategory">Phân loại chi tiết:</label>
-          <select id="editCategory" name="category" required>
-            <!-- Các tùy chọn sẽ được điền động -->
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="editNote">Ghi chú (nếu có):</label>
-          <input type="text" id="editNote" name="note">
-        </div>
-        <div class="form-buttons">
-          <button type="button" id="cancelEditBtn">Hủy</button>
-          <button type="submit" id="saveEditBtn">Lưu</button>
-        </div>
-      </form>
-    </div>
   </div>
 </div>
 
@@ -1475,7 +1314,7 @@ function updateMonthlyChart(filteredData) {
     monthlyLegend.appendChild(column); // Chỉ thêm 1 cột vào monthlyLegend
 }
 
-window.fetchTransactions = async function() {
+  window.fetchTransactions = async function() {
   const transactionDate = document.getElementById('transactionDate').value;
   console.log("Fetching transactions for date: " + transactionDate);
   if (!transactionDate) {
@@ -1484,61 +1323,26 @@ window.fetchTransactions = async function() {
   }
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout sau 5 giây
-
-    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`, {
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-
+    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`);
     const transactionData = await response.json();
     console.log("Transaction data received: ", transactionData);
-
     if (transactionData.error) {
       throw new Error(transactionData.error);
     }
-
-    if (!Array.isArray(transactionData)) {
-      throw new Error("Dữ liệu giao dịch không hợp lệ, cần một mảng!");
-    }
-
-    const validatedData = transactionData.map((item, index) => ({
-      id: item.id || `temp-id-${index}`,
-      date: item.date || transactionDate,
-      content: item.content || 'Không có nội dung',
-      amount: Number(item.amount) || 0,
-      type: item.type || 'Chi tiêu',
-      category: item.category || 'Không có phân loại',
-      note: item.note || ''
-    }));
-
-    console.log("Dữ liệu giao dịch đã được xử lý: ", validatedData);
-    displayTransactions(validatedData);
+    displayTransactions(transactionData);
   } catch (error) {
     console.error("Error fetching transactions: ", error.message);
-    if (error.name === 'AbortError') {
-      alert("Lỗi: Yêu cầu lấy dữ liệu giao dịch đã hết thời gian!");
-    } else {
-      alert("Lỗi khi lấy dữ liệu giao dịch: " + error.message);
-    }
+    alert("Lỗi khi lấy dữ liệu giao dịch: " + error.message);
     displayTransactions({ error: true });
   }
 };
     
-  // Biến toàn cục để lưu trữ dữ liệu giao dịch
-let transactionDataMap = {};
-
-function displayTransactions(data) {
+   function displayTransactions(data) {
   console.log("Dữ liệu nhận được: ", data);
   const container = document.getElementById('transactionsContainer');
   const summaryContainer = document.getElementById('dailySummary');
   container.innerHTML = '';
 
-  // Xóa dữ liệu cũ trong transactionDataMap
-  transactionDataMap = {};
-
-  // Kiểm tra nếu không có dữ liệu hoặc có lỗi
   if (data.error || !data || data.length === 0) {
     console.log("Không có giao dịch để hiển thị");
     container.innerHTML = '<div>Không có giao dịch trong ngày này</div>';
@@ -1559,7 +1363,6 @@ function displayTransactions(data) {
     return;
   }
 
-  // Tính tổng thu nhập, chi tiêu và số dư
   let totalIncome = 0;
   let totalExpense = 0;
   data.forEach(item => {
@@ -1570,8 +1373,6 @@ function displayTransactions(data) {
     }
   });
   const balance = totalIncome - totalExpense;
-
-  // Cập nhật tổng quan
   summaryContainer.innerHTML = `
     <div class="stat-box income">
       <div class="title">Tổng thu nhập</div>
@@ -1587,7 +1388,6 @@ function displayTransactions(data) {
     </div>
   `;
 
-  // Hiển thị danh sách giao dịch (giới hạn 10 giao dịch)
   console.log("Hiển thị giao dịch: ", data.slice(0, 10));
   const limitedData = data.slice(0, 10);
   limitedData.forEach((item, index) => {
@@ -1595,196 +1395,90 @@ function displayTransactions(data) {
     transactionBox.className = 'transaction-box';
     const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
     const typeClass = item.type === 'Thu nhập' ? 'income' : 'expense';
-
-    // Đảm bảo dữ liệu đầy đủ trước khi hiển thị
-    const safeItem = {
-      id: item.id || `temp-id-${index}`,
-      date: item.date || 'Không có ngày',
-      content: item.content || 'Không có nội dung',
-      amount: item.amount || 0,
-      type: item.type || 'Chi tiêu',
-      category: item.category || 'Không có phân loại',
-      note: item.note || ''
-    };
-
-    // Lưu dữ liệu giao dịch vào transactionDataMap
-    transactionDataMap[safeItem.id] = safeItem;
-
-    // Thêm giao dịch và nút "Sửa" vào HTML
-    try {
-      transactionBox.innerHTML = `
-        <div class="transaction-content" style="display: flex; flex-direction: column; width: 100%;">
-          <div style="display: flex; justify-content: space-between; width: 100%;">
-            <div style="flex: 1;">
-              <div class="date">${safeItem.date}</div>
-              <div class="amount" style="color: ${amountColor}">${safeItem.amount.toLocaleString('vi-VN')}đ</div>
-              <div class="content">Nội dung: ${safeItem.content}${safeItem.note ? ` (${safeItem.note})` : ''}</div>
-            </div>
-            <div style="flex: 1; text-align: right;">
-              <div class="type ${typeClass}">Phân loại: ${safeItem.type}</div>
-              <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
-            </div>
-          </div>
-          <button class="edit-btn" data-transaction-id="${safeItem.id}">Sửa</button>
+    transactionBox.innerHTML = `
+      <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div style="flex: 1;">
+          <div class="date">${item.date}</div>
+          <div class="amount" style="color: ${amountColor}">${item.amount.toLocaleString('vi-VN')}đ</div>
+          <div class="content">Nội dung: ${item.content}${item.note ? ` (${item.note})` : ''}</div>
         </div>
-      `;
-      container.appendChild(transactionBox);
-      console.log(`Đã thêm giao dịch ${index + 1} vào DOM: `, safeItem);
-    } catch (error) {
-      console.error(`Lỗi khi thêm giao dịch ${index + 1} vào DOM: `, error);
-      transactionBox.innerHTML = `
-        <div style="display: flex; justify-content: space-between; width: 100%;">
-          <div style="flex: 1;">
-            <div class="date">${safeItem.date}</div>
-            <div class="amount" style="color: ${amountColor}">${safeItem.amount.toLocaleString('vi-VN')}đ</div>
-            <div class="content">Nội dung: ${safeItem.content}${safeItem.note ? ` (${safeItem.note})` : ''}</div>
-          </div>
-          <div style="flex: 1; text-align: right;">
-            <div class="type ${typeClass}">Phân loại: ${safeItem.type}</div>
-            <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
-          </div>
+        <div style="flex: 1; text-align: right;">
+          <div class="type ${typeClass}">Phân loại: ${item.type}</div>
+          <div class="category">Phân loại chi tiết: ${item.category}</div>
+          <button class="edit-btn" data-index="${index}" style="margin-top: 0.5rem; background: #F59E0B; padding: 0.4rem 1rem; border-radius: 8px;">Sửa</button>
         </div>
-        <div style="color: red;">Lỗi: Không thể thêm nút Sửa - ${error.message}</div>
-      `;
-      container.appendChild(transactionBox);
-    }
+      </div>
+      <div class="edit-form" id="edit-form-${index}" style="display: none; margin-top: 1rem;"></div>
+    `;
+    container.appendChild(transactionBox);
   });
 
-  // Kiểm tra xem nút "Sửa" có được thêm vào DOM không
-  const editButtons = document.querySelectorAll('.edit-btn');
-  console.log("Số lượng nút Sửa được tìm thấy: ", editButtons.length);
-  if (editButtons.length === 0) {
-    console.warn("Không tìm thấy nút Sửa nào trong DOM. Kiểm tra HTML hoặc CSS!");
-  }
-
-  // Gán sự kiện click cho các nút "Sửa"
-  editButtons.forEach((button, btnIndex) => {
-    button.addEventListener('click', function() {
-      const transactionId = this.getAttribute('data-transaction-id');
-      const transaction = transactionDataMap[transactionId];
-      if (!transaction) {
-        console.error(`Không tìm thấy dữ liệu giao dịch cho ID: ${transactionId}`);
-        alert("Lỗi: Không tìm thấy dữ liệu giao dịch để chỉnh sửa!");
-        return;
-      }
-      console.log(`Mở modal chỉnh sửa cho giao dịch ${btnIndex + 1}: `, transaction);
-      openEditModal(transaction);
+  // Gắn sự kiện cho các nút "Sửa"
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const index = this.getAttribute('data-index');
+      const transaction = limitedData[index];
+      showEditForm(index, transaction);
     });
   });
 }
-// Thêm hàm để lấy danh sách "Phân loại chi tiết" từ sheet "từ khóa"
-    async function fetchCategories() {
-  try {
-    // Thêm timeout cho fetch
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout sau 5 giây
+function showEditForm(index, transaction) {
+  const formContainer = document.getElementById(`edit-form-${index}`);
+  const isFormVisible = formContainer.style.display === 'block';
 
-    const response = await fetch(`${apiUrl}?action=getCategories&sheetId=${sheetId}`, {
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-
-    const categories = await response.json();
-    console.log("Danh sách phân loại chi tiết: ", categories);
-
-    if (categories.error) {
-      throw new Error(categories.error);
-    }
-    return categories; // Giả sử API trả về một mảng các phân loại
-  } catch (error) {
-    console.error("Lỗi khi lấy danh sách phân loại: ", error);
-    if (error.name === 'AbortError') {
-      alert("Lỗi: Yêu cầu lấy danh sách phân loại đã hết thời gian!");
-    } else {
-      alert("Lỗi khi lấy danh sách phân loại: " + error.message);
-    }
-    return [];
-  }
-}
-    // Thêm hàm để mở Modal và điền dữ liệu
-    async function openEditModal(transaction) {
-  const modal = document.getElementById('editTransactionModal');
-  const form = document.getElementById('editTransactionForm');
-  const transactionIdInput = document.getElementById('editTransactionId');
-  const contentInput = document.getElementById('editContent');
-  const amountInput = document.getElementById('editAmount');
-  const typeSelect = document.getElementById('editType');
-  const categorySelect = document.getElementById('editCategory');
-  const noteInput = document.getElementById('editNote');
-
-  transactionIdInput.value = transaction.id || '';
-  contentInput.value = transaction.content || '';
-  amountInput.value = transaction.amount || 0;
-  typeSelect.value = transaction.type || 'Chi tiêu';
-  noteInput.value = transaction.note || '';
-
-  const categories = await fetchCategories();
-  categorySelect.innerHTML = '';
-  if (categories.length === 0) {
-    const option = document.createElement('option');
-    option.value = '';
-    option.textContent = 'Không có phân loại';
-    categorySelect.appendChild(option);
-  } else {
-    categories.forEach(category => {
-      const option = document.createElement('option');
-      option.value = category;
-      option.textContent = category;
-      if (category === transaction.category) {
-        option.selected = true;
-      }
-      categorySelect.appendChild(option);
-    });
+  // Nếu form đang hiển thị, ẩn nó đi; ngược lại, hiển thị form
+  if (isFormVisible) {
+    formContainer.style.display = 'none';
+    return;
   }
 
-  modal.style.display = 'flex';
-
-  document.getElementById('cancelEditBtn').onclick = () => {
-    modal.style.display = 'none';
-    form.reset();
-  };
+  formContainer.style.display = 'block';
+  formContainer.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+      <input type="text" id="edit-content-${index}" value="${transaction.content}" placeholder="Nội dung" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+      <input type="number" id="edit-amount-${index}" value="${transaction.amount}" placeholder="Số tiền" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+      <select id="edit-type-${index}" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+        <option value="Thu nhập" ${transaction.type === 'Thu nhập' ? 'selected' : ''}>Thu nhập</option>
+        <option value="Chi tiêu" ${transaction.type === 'Chi tiêu' ? 'selected' : ''}>Chi tiêu</option>
+      </select>
+      <input type="text" id="edit-category-${index}" value="${transaction.category}" placeholder="Phân loại chi tiết" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+      <input type="text" id="edit-note-${index}" value="${transaction.note || ''}" placeholder="Ghi chú (nếu có)" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
+      <button onclick="saveTransaction(${index}, '${transaction.date}')" style="background: #16A34A; padding: 0.5rem; border-radius: 8px;">Lưu</button>
+    </div>
+  `;
 }
-      // Thêm hàm để lưu dữ liệu đã chỉnh sửa
-    document.getElementById('editTransactionForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const transactionId = document.getElementById('editTransactionId').value;
-  const content = document.getElementById('editContent').value;
-  const amount = parseInt(document.getElementById('editAmount').value);
-  const type = document.getElementById('editType').value;
-  const category = document.getElementById('editCategory').value;
-  const note = document.getElementById('editNote').value;
-
+    async function saveTransaction(index, date) {
   const updatedTransaction = {
-    id: transactionId,
-    date: document.getElementById('transactionDate').value, // Ngày không thay đổi
-    content: content,
-    amount: amount,
-    type: type,
-    category: category,
-    note: note
+    date: date,
+    content: document.getElementById(`edit-content-${index}`).value,
+    amount: parseFloat(document.getElementById(`edit-amount-${index}`).value) || 0,
+    type: document.getElementById(`edit-type-${index}`).value,
+    category: document.getElementById(`edit-category-${index}`).value,
+    note: document.getElementById(`edit-note-${index}`).value || ''
   };
 
   try {
     const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedTransaction)
+      body: JSON.stringify(updatedTransaction),
     });
+
     const result = await response.json();
     if (result.error) {
       throw new Error(result.error);
     }
+
     alert("Cập nhật giao dịch thành công!");
-    document.getElementById('editTransactionModal').style.display = 'none';
-    // Làm mới danh sách giao dịch
+    // Làm mới danh sách giao dịch sau khi lưu
     window.fetchTransactions();
   } catch (error) {
     console.error("Lỗi khi cập nhật giao dịch: ", error);
     alert("Lỗi khi cập nhật giao dịch: " + error.message);
   }
-});
+}
     function getCurrentMonthRange() {
       const now = new Date();
       const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
