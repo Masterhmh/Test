@@ -183,7 +183,7 @@ button:hover {
   font-size: 0.9rem;
   flex-grow: 0;
   flex-shrink: 0;
-  max-width: 120px;
+  max-width: 140px; /* Đã tăng để chứa nội dung */
   min-height: 80px;
   display: flex;
   flex-direction: column;
@@ -218,10 +218,12 @@ button:hover {
 }
 
 .stat-box .amount.no-data {
-  font-size: 0.8rem;
-  white-space: normal;
-  word-wrap: break-word;
+  font-size: 1rem;
+  white-space: pre-line;
+  text-align: center; 
   line-height: 1.2;
+  max-width: 100%; 
+  padding: 0 0.2rem;
 }
 
 .income .amount { color: #10B981; }
@@ -589,7 +591,7 @@ canvas#monthlyChart {
 }
 
 .transaction-box .amount {
-  font-size: 1rem; /* Giảm kích thước số tiền */
+  font-size: 1rem;
 }
 
 /* Nhóm: Media Queries - Responsive Design */
@@ -607,7 +609,7 @@ canvas#monthlyChart {
   button { padding: 0.6rem 1rem; font-size: 0.85rem; }
   .stats-container { 
     gap: 0.5rem; 
-    justify-content: center; /* Đảm bảo căn giữa */
+    justify-content: center;
   }
   .stat-box { 
     width: 100px; 
@@ -672,7 +674,7 @@ canvas#monthlyChart {
   h1 { font-size: 1.8rem; }
   .stats-container { 
     gap: 1.5rem; 
-    justify-content: center; /* Đảm bảo căn giữa */
+    justify-content: center;
   }
   .stat-box { width: 130px; padding: 1rem; max-width: 130px; }
   .stat-box .title { font-size: 0.95rem; }
@@ -715,7 +717,7 @@ canvas#monthlyChart {
   h1 { font-size: 2rem; }
   .stats-container { 
     gap: 2rem; 
-    justify-content: center; /* Đảm bảo căn giữa */
+    justify-content: center;
   }
   .stat-box { width: 140px; padding: 1rem; max-width: 140px; }
   .stat-box .title { font-size: 1rem; }
@@ -965,70 +967,70 @@ canvas#monthlyChart {
 };
 
     function updateFinancialData(data) {
-    console.log("Updating financial data with: ", data);
-    const container = document.getElementById('statsContainer');
+  console.log("Updating financial data with: ", data);
+  const container = document.getElementById('statsContainer');
 
-    // Nếu không có dữ liệu hoặc có lỗi, hiển thị mặc định
-    if (!data || data.error) {
-        console.log("No data or error detected");
-        container.innerHTML = `
-            <div class="stat-box income">
-                <div class="title">Tổng thu nhập</div>
-                <div class="amount">Không có dữ liệu</div>
-            </div>
-            <div class="stat-box expense">
-                <div class="title">Tổng chi tiêu</div>
-                <div class="amount">Không có dữ liệu</div>
-            </div>
-            <div class="stat-box balance">
-                <div class="title">Số dư</div>
-                <div class="amount">Không có dữ liệu</div>
-            </div>
-        `;
-        return;
-    }
-
-    // Lấy giá trị từ dữ liệu, mặc định là 0 nếu không có
-    const totalIncome = Number(data.income) || 0;  // Nếu không có thu nhập, đặt là 0
-    const totalExpense = Number(data.expense) || 0;  // Nếu không có chi tiêu, đặt là 0
-
-    // Nếu cả thu nhập và chi tiêu đều là 0, hiển thị "Không có dữ liệu"
-    if (totalIncome === 0 && totalExpense === 0) {
-        container.innerHTML = `
-            <div class="stat-box income">
-                <div class="title">Tổng thu nhập</div>
-                <div class="amount">Không có dữ liệu</div>
-            </div>
-            <div class="stat-box expense">
-                <div class="title">Tổng chi tiêu</div>
-                <div class="amount">Không có dữ liệu</div>
-            </div>
-            <div class="stat-box balance">
-                <div class="title">Số dư</div>
-                <div class="amount">Không có dữ liệu</div>
-            </div>
-        `;
-        return;
-    }
-
-    // Tính số dư nếu có ít nhất một giá trị khác 0
-    const balance = totalIncome - totalExpense;
-
-    // Cập nhật giao diện với dữ liệu thực tế
+  // Nếu không có dữ liệu hoặc có lỗi, hiển thị thông báo
+  if (!data || data.error) {
+    console.log("No data or error detected");
     container.innerHTML = `
-        <div class="stat-box income">
-            <div class="title">Tổng thu nhập</div>
-            <div class="amount">${totalIncome.toLocaleString('vi-VN')}đ</div>
-        </div>
-        <div class="stat-box expense">
-            <div class="title">Tổng chi tiêu</div>
-            <div class="amount">${totalExpense.toLocaleString('vi-VN')}đ</div>
-        </div>
-        <div class="stat-box balance">
-            <div class="title">Số dư</div>
-            <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
-        </div>
+      <div class="stat-box income">
+        <div class="title">Tổng thu nhập</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
+      </div>
+      <div class="stat-box expense">
+        <div class="title">Tổng chi tiêu</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
+      </div>
+      <div class="stat-box balance">
+        <div class="title">Số dư</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
+      </div>
     `;
+    return;
+  }
+
+  // Lấy giá trị từ dữ liệu, mặc định là 0 nếu không có
+  const totalIncome = Number(data.income) || 0;
+  const totalExpense = Number(data.expense) || 0;
+
+  // Nếu cả thu nhập và chi tiêu đều là 0, hiển thị "Không có dữ liệu"
+  if (totalIncome === 0 && totalExpense === 0) {
+    container.innerHTML = `
+      <div class="stat-box income">
+        <div class="title">Tổng thu nhập</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
+      </div>
+      <div class="stat-box expense">
+        <div class="title">Tổng chi tiêu</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
+      </div>
+      <div class="stat-box balance">
+        <div class="title">Số dư</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
+      </div>
+    `;
+    return;
+  }
+
+  // Tính số dư nếu có ít nhất một giá trị khác 0
+  const balance = totalIncome - totalExpense;
+
+  // Cập nhật giao diện với dữ liệu thực tế
+  container.innerHTML = `
+    <div class="stat-box income">
+      <div class="title">Tổng thu nhập</div>
+      <div class="amount">${totalIncome.toLocaleString('vi-VN')}đ</div>
+    </div>
+    <div class="stat-box expense">
+      <div class="title">Tổng chi tiêu</div>
+      <div class="amount">${totalExpense.toLocaleString('vi-VN')}đ</div>
+    </div>
+    <div class="stat-box balance">
+      <div class="title">Số dư</div>
+      <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
+    </div>
+  `;
 }
     function updateChartData(response) {
       if (response.error) {
@@ -1342,27 +1344,25 @@ function updateMonthlyChart(filteredData) {
   const container = document.getElementById('transactionsContainer');
   const summaryContainer = document.getElementById('dailySummary');
   container.innerHTML = '';
-
   if (data.error || !data || data.length === 0) {
     console.log("Không có giao dịch để hiển thị");
     container.innerHTML = '<div>Không có giao dịch trong ngày này</div>';
     summaryContainer.innerHTML = `
       <div class="stat-box income">
         <div class="title">Tổng thu nhập</div>
-        <div class="amount no-data">Không có dữ liệu</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
       </div>
       <div class="stat-box expense">
         <div class="title">Tổng chi tiêu</div>
-        <div class="amount no-data">Không có dữ liệu</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
       </div>
       <div class="stat-box balance">
         <div class="title">Số dư</div>
-        <div class="amount no-data">Không có dữ liệu</div>
+        <div class="amount no-data">Không có<br>dữ liệu</div>
       </div>
     `;
     return;
   }
-
   let totalIncome = 0;
   let totalExpense = 0;
   data.forEach(item => {
@@ -1387,10 +1387,9 @@ function updateMonthlyChart(filteredData) {
       <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
     </div>
   `;
-
   console.log("Hiển thị giao dịch: ", data.slice(0, 10));
   const limitedData = data.slice(0, 10);
-  limitedData.forEach((item, index) => {
+  limitedData.forEach(item => {
     const transactionBox = document.createElement('div');
     transactionBox.className = 'transaction-box';
     const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
@@ -1405,80 +1404,13 @@ function updateMonthlyChart(filteredData) {
         <div style="flex: 1; text-align: right;">
           <div class="type ${typeClass}">Phân loại: ${item.type}</div>
           <div class="category">Phân loại chi tiết: ${item.category}</div>
-          <button class="edit-btn" data-index="${index}" style="margin-top: 0.5rem; background: #F59E0B; padding: 0.4rem 1rem; border-radius: 8px;">Sửa</button>
         </div>
       </div>
-      <div class="edit-form" id="edit-form-${index}" style="display: none; margin-top: 1rem;"></div>
     `;
     container.appendChild(transactionBox);
   });
-
-  // Gắn sự kiện cho các nút "Sửa"
-  document.querySelectorAll('.edit-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const index = this.getAttribute('data-index');
-      const transaction = limitedData[index];
-      showEditForm(index, transaction);
-    });
-  });
 }
-function showEditForm(index, transaction) {
-  const formContainer = document.getElementById(`edit-form-${index}`);
-  const isFormVisible = formContainer.style.display === 'block';
 
-  // Nếu form đang hiển thị, ẩn nó đi; ngược lại, hiển thị form
-  if (isFormVisible) {
-    formContainer.style.display = 'none';
-    return;
-  }
-
-  formContainer.style.display = 'block';
-  formContainer.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-      <input type="text" id="edit-content-${index}" value="${transaction.content}" placeholder="Nội dung" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
-      <input type="number" id="edit-amount-${index}" value="${transaction.amount}" placeholder="Số tiền" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
-      <select id="edit-type-${index}" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
-        <option value="Thu nhập" ${transaction.type === 'Thu nhập' ? 'selected' : ''}>Thu nhập</option>
-        <option value="Chi tiêu" ${transaction.type === 'Chi tiêu' ? 'selected' : ''}>Chi tiêu</option>
-      </select>
-      <input type="text" id="edit-category-${index}" value="${transaction.category}" placeholder="Phân loại chi tiết" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
-      <input type="text" id="edit-note-${index}" value="${transaction.note || ''}" placeholder="Ghi chú (nếu có)" style="padding: 0.5rem; border-radius: 8px; border: 1px solid #E5E7EB;">
-      <button onclick="saveTransaction(${index}, '${transaction.date}')" style="background: #16A34A; padding: 0.5rem; border-radius: 8px;">Lưu</button>
-    </div>
-  `;
-}
-    async function saveTransaction(index, date) {
-  const updatedTransaction = {
-    date: date,
-    content: document.getElementById(`edit-content-${index}`).value,
-    amount: parseFloat(document.getElementById(`edit-amount-${index}`).value) || 0,
-    type: document.getElementById(`edit-type-${index}`).value,
-    category: document.getElementById(`edit-category-${index}`).value,
-    note: document.getElementById(`edit-note-${index}`).value || ''
-  };
-
-  try {
-    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedTransaction),
-    });
-
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error);
-    }
-
-    alert("Cập nhật giao dịch thành công!");
-    // Làm mới danh sách giao dịch sau khi lưu
-    window.fetchTransactions();
-  } catch (error) {
-    console.error("Lỗi khi cập nhật giao dịch: ", error);
-    alert("Lỗi khi cập nhật giao dịch: " + error.message);
-  }
-}
     function getCurrentMonthRange() {
       const now = new Date();
       const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
