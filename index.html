@@ -534,20 +534,36 @@ canvas#monthlyChart {
 }
 
 .transaction-box {
+  display: flex;
+  flex-direction: column; /* Đặt flex-direction thành column để nút Sửa nằm dưới nội dung */
+  background: #fff;
+  border-radius: 12px;
   padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 600px;
-  border-radius: 16px;
-  font-size: 1rem;
+}
+
+.transaction-content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  background: linear-gradient(135deg, #F8FAFC, #E5E7EB);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.transaction-box .edit-btn {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
   transition: transform 0.2s;
-  margin-bottom: 1rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin-top: 0.5rem;
+  align-self: flex-end; /* Đặt nút Sửa ở bên phải */
+  display: block !important; /* Đảm bảo nút hiển thị */
+  border: 2px solid #fff; /* Thêm viền để dễ nhìn */
+  z-index: 10; /* Đảm bảo nút không bị che */
+  visibility: visible !important; /* Đảm bảo nút không bị ẩn */
 }
 
 .transaction-box:hover { 
@@ -1459,7 +1475,7 @@ function updateMonthlyChart(filteredData) {
     monthlyLegend.appendChild(column); // Chỉ thêm 1 cột vào monthlyLegend
 }
 
- window.fetchTransactions = async function() {
+window.fetchTransactions = async function() {
   const transactionDate = document.getElementById('transactionDate').value;
   console.log("Fetching transactions for date: " + transactionDate);
   if (!transactionDate) {
@@ -1510,7 +1526,7 @@ function updateMonthlyChart(filteredData) {
   }
 };
     
-   // Biến toàn cục để lưu trữ dữ liệu giao dịch
+  // Biến toàn cục để lưu trữ dữ liệu giao dịch
 let transactionDataMap = {};
 
 function displayTransactions(data) {
@@ -1597,18 +1613,20 @@ function displayTransactions(data) {
     // Thêm giao dịch và nút "Sửa" vào HTML
     try {
       transactionBox.innerHTML = `
-        <div style="display: flex; justify-content: space-between; width: 100%;">
-          <div style="flex: 1;">
-            <div class="date">${safeItem.date}</div>
-            <div class="amount" style="color: ${amountColor}">${safeItem.amount.toLocaleString('vi-VN')}đ</div>
-            <div class="content">Nội dung: ${safeItem.content}${safeItem.note ? ` (${safeItem.note})` : ''}</div>
+        <div class="transaction-content" style="display: flex; flex-direction: column; width: 100%;">
+          <div style="display: flex; justify-content: space-between; width: 100%;">
+            <div style="flex: 1;">
+              <div class="date">${safeItem.date}</div>
+              <div class="amount" style="color: ${amountColor}">${safeItem.amount.toLocaleString('vi-VN')}đ</div>
+              <div class="content">Nội dung: ${safeItem.content}${safeItem.note ? ` (${safeItem.note})` : ''}</div>
+            </div>
+            <div style="flex: 1; text-align: right;">
+              <div class="type ${typeClass}">Phân loại: ${safeItem.type}</div>
+              <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
+            </div>
           </div>
-          <div style="flex: 1; text-align: right;">
-            <div class="type ${typeClass}">Phân loại: ${safeItem.type}</div>
-            <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
-          </div>
+          <button class="edit-btn" data-transaction-id="${safeItem.id}">Sửa</button>
         </div>
-        <button class="edit-btn" data-transaction-id="${safeItem.id}">Sửa</button>
       `;
       container.appendChild(transactionBox);
       console.log(`Đã thêm giao dịch ${index + 1} vào DOM: `, safeItem);
