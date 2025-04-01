@@ -844,7 +844,8 @@ canvas#monthlyChart {
   margin-top: 0.5rem;
   align-self: flex-end;
   display: block; /* Đảm bảo nút hiển thị */
-  border: 1px solid #fff; /* Thêm viền để dễ nhìn */
+  border: 2px solid #fff; /* Thêm viền để dễ nhìn */
+  z-index: 10; /* Đảm bảo nút không bị che */
 }
 
 .transaction-box .edit-btn:hover {
@@ -1480,8 +1481,8 @@ function updateMonthlyChart(filteredData) {
     }
 
     // Đảm bảo mỗi giao dịch có đầy đủ các thuộc tính cần thiết
-    const validatedData = transactionData.map(item => ({
-      id: item.id || '', // Đảm bảo có id, nếu không thì để trống
+    const validatedData = transactionData.map((item, index) => ({
+      id: item.id || `temp-id-${index}`, // Tạo ID tạm nếu không có
       date: item.date || transactionDate,
       content: item.content || 'Không có nội dung',
       amount: Number(item.amount) || 0,
@@ -1490,6 +1491,7 @@ function updateMonthlyChart(filteredData) {
       note: item.note || ''
     }));
 
+    console.log("Dữ liệu giao dịch đã được xử lý: ", validatedData);
     displayTransactions(validatedData);
   } catch (error) {
     console.error("Error fetching transactions: ", error.message);
@@ -1556,7 +1558,7 @@ function updateMonthlyChart(filteredData) {
   // Hiển thị danh sách giao dịch (giới hạn 10 giao dịch)
   console.log("Hiển thị giao dịch: ", data.slice(0, 10));
   const limitedData = data.slice(0, 10);
-  limitedData.forEach(item => {
+  limitedData.forEach((item, index) => {
     const transactionBox = document.createElement('div');
     transactionBox.className = 'transaction-box';
     const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
@@ -1564,7 +1566,7 @@ function updateMonthlyChart(filteredData) {
 
     // Đảm bảo dữ liệu đầy đủ trước khi hiển thị
     const safeItem = {
-      id: item.id || '',
+      id: item.id || `temp-id-${index}`, // Tạo ID tạm nếu không có
       date: item.date || 'Không có ngày',
       content: item.content || 'Không có nội dung',
       amount: item.amount || 0,
@@ -1573,8 +1575,10 @@ function updateMonthlyChart(filteredData) {
       note: item.note || ''
     };
 
-    // Thêm nút "Sửa" vào HTML
+    // Thêm giao dịch và nút "Sửa" vào HTML
     try {
+      // Thoát các ký tự đặc biệt trong dữ liệu để tránh lỗi parse JSON
+      const escapedItem = JSON.stringify(safeItem).replace(/'/g, "\\'").replace(/"/g, '&quot;');
       transactionBox.innerHTML = `
         <div style="display: flex; justify-content: space-between; width: 100%;">
           <div style="flex: 1;">
@@ -1587,12 +1591,12 @@ function updateMonthlyChart(filteredData) {
             <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
           </div>
         </div>
-        <button class="edit-btn" data-transaction='${JSON.stringify(safeItem)}'>Sửa</button>
+        <button class="edit-btn" data-transaction="${escapedItem}">Sửa</button>
       `;
       container.appendChild(transactionBox);
-      console.log("Đã thêm giao dịch vào DOM: ", safeItem);
+      console.log(`Đã thêm giao dịch ${index + 1} vào DOM: `, safeItem);
     } catch (error) {
-      console.error("Lỗi khi thêm giao dịch vào DOM: ", error);
+      console.error(`Lỗi khi thêm giao dịch ${index + 1} vào DOM: `, error);
       transactionBox.innerHTML = `
         <div style="display: flex; justify-content: space-between; width: 100%;">
           <div style="flex: 1;">
@@ -1605,7 +1609,7 @@ function updateMonthlyChart(filteredData) {
             <div class="category">Phân loại chi tiết: ${safeItem.category}</div>
           </div>
         </div>
-        <div style="color: red;">Lỗi: Không thể thêm nút Sửa</div>
+        <div style="color: red;">Lỗi: Không thể thêm nút Sửa - ${error.message}</div>
       `;
       container.appendChild(transactionBox);
     }
@@ -1614,14 +1618,14 @@ function updateMonthlyChart(filteredData) {
   // Gán lại sự kiện click cho các nút "Sửa" sau khi thêm vào DOM
   const editButtons = document.querySelectorAll('.edit-btn');
   console.log("Số lượng nút Sửa được tìm thấy: ", editButtons.length);
-  editButtons.forEach(button => {
+  editButtons.forEach((button, btnIndex) => {
     button.addEventListener('click', function() {
       try {
         const transaction = JSON.parse(this.getAttribute('data-transaction'));
-        console.log("Mở modal chỉnh sửa cho giao dịch: ", transaction);
+        console.log(`Mở modal chỉnh sửa cho giao dịch ${btnIndex + 1}: `, transaction);
         openEditModal(transaction);
       } catch (error) {
-        console.error("Lỗi khi parse dữ liệu giao dịch: ", error);
+        console.error(`Lỗi khi parse dữ liệu giao dịch ${btnIndex + 1}: `, error);
         alert("Lỗi khi mở modal chỉnh sửa: " + error.message);
       }
     });
