@@ -1354,7 +1354,13 @@ function updateMonthlyChart(filteredData) {
   }
 
   try {
-    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`);
+    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
     const transactionData = await response.json();
     console.log("Transaction data received: ", transactionData);
     if (transactionData.error) {
@@ -1371,7 +1377,13 @@ function updateMonthlyChart(filteredData) {
    // Hàm lấy danh sách danh mục từ API
 async function fetchCategories() {
   try {
-    const response = await fetch(`${apiUrl}?action=getCategories&sheetId=${sheetId}`);
+    const response = await fetch(`${apiUrl}?action=getCategories&sheetId=${sheetId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
     const data = await response.json();
     if (data.error) {
       throw new Error(data.error);
@@ -1499,6 +1511,8 @@ async function saveTransaction(index, date, oldContent, oldAmount) {
   }
 
   const updatedTransaction = {
+    action: 'updateTransaction',
+    sheetId: sheetId,
     date: date,
     oldContent: oldContent,
     oldAmount: oldAmount,
@@ -1509,11 +1523,14 @@ async function saveTransaction(index, date, oldContent, oldAmount) {
   };
 
   try {
-    const queryString = new URLSearchParams(updatedTransaction).toString();
-    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}&${queryString}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedTransaction)
     });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.error) {
       throw new Error(result.error);
