@@ -843,9 +843,10 @@ canvas#monthlyChart {
   transition: transform 0.2s;
   margin-top: 0.5rem;
   align-self: flex-end;
-  display: block; /* Đảm bảo nút hiển thị */
+  display: block !important; /* Đảm bảo nút hiển thị */
   border: 2px solid #fff; /* Thêm viền để dễ nhìn */
   z-index: 10; /* Đảm bảo nút không bị che */
+  visibility: visible !important; /* Đảm bảo nút không bị ẩn */
 }
 
 .transaction-box .edit-btn:hover {
@@ -1467,7 +1468,15 @@ function updateMonthlyChart(filteredData) {
   }
 
   try {
-    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`);
+    // Thêm timeout cho fetch để tránh treo
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout sau 5 giây
+
+    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
     const transactionData = await response.json();
     console.log("Transaction data received: ", transactionData);
 
@@ -1495,7 +1504,11 @@ function updateMonthlyChart(filteredData) {
     displayTransactions(validatedData);
   } catch (error) {
     console.error("Error fetching transactions: ", error.message);
-    alert("Lỗi khi lấy dữ liệu giao dịch: " + error.message);
+    if (error.name === 'AbortError') {
+      alert("Lỗi: Yêu cầu lấy dữ liệu giao dịch đã hết thời gian!");
+    } else {
+      alert("Lỗi khi lấy dữ liệu giao dịch: " + error.message);
+    }
     displayTransactions({ error: true });
   }
 };
@@ -1566,7 +1579,7 @@ function updateMonthlyChart(filteredData) {
 
     // Đảm bảo dữ liệu đầy đủ trước khi hiển thị
     const safeItem = {
-      id: item.id || `temp-id-${index}`, // Tạo ID tạm nếu không có
+      id: item.id || `temp-id-${index}`,
       date: item.date || 'Không có ngày',
       content: item.content || 'Không có nội dung',
       amount: item.amount || 0,
@@ -1577,8 +1590,7 @@ function updateMonthlyChart(filteredData) {
 
     // Thêm giao dịch và nút "Sửa" vào HTML
     try {
-      // Thoát các ký tự đặc biệt trong dữ liệu để tránh lỗi parse JSON
-      const escapedItem = JSON.stringify(safeItem).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      const escapedItem = JSON.stringify(safeItem).replace(/'/g, "\\'").replace(/"/g, '"');
       transactionBox.innerHTML = `
         <div style="display: flex; justify-content: space-between; width: 100%;">
           <div style="flex: 1;">
@@ -1615,9 +1627,14 @@ function updateMonthlyChart(filteredData) {
     }
   });
 
-  // Gán lại sự kiện click cho các nút "Sửa" sau khi thêm vào DOM
+  // Kiểm tra xem nút "Sửa" có được thêm vào DOM không
   const editButtons = document.querySelectorAll('.edit-btn');
   console.log("Số lượng nút Sửa được tìm thấy: ", editButtons.length);
+  if (editButtons.length === 0) {
+    console.warn("Không tìm thấy nút Sửa nào trong DOM. Kiểm tra HTML hoặc CSS!");
+  }
+
+  // Gán sự kiện click cho các nút "Sửa"
   editButtons.forEach((button, btnIndex) => {
     button.addEventListener('click', function() {
       try {
@@ -1634,16 +1651,29 @@ function updateMonthlyChart(filteredData) {
 // Thêm hàm để lấy danh sách "Phân loại chi tiết" từ sheet "từ khóa"
     async function fetchCategories() {
   try {
-    const response = await fetch(`${apiUrl}?action=getCategories&sheetId=${sheetId}`);
+    // Thêm timeout cho fetch
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout sau 5 giây
+
+    const response = await fetch(`${apiUrl}?action=getCategories&sheetId=${sheetId}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
     const categories = await response.json();
     console.log("Danh sách phân loại chi tiết: ", categories);
+
     if (categories.error) {
       throw new Error(categories.error);
     }
-    return categories; // Giả sử API trả về một mảng các phân loại, ví dụ: ["Ăn uống", "Di lại", "Làm đẹp", ...]
+    return categories; // Giả sử API trả về một mảng các phân loại
   } catch (error) {
     console.error("Lỗi khi lấy danh sách phân loại: ", error);
-    alert("Lỗi khi lấy danh sách phân loại: " + error.message);
+    if (error.name === 'AbortError') {
+      alert("Lỗi: Yêu cầu lấy danh sách phân loại đã hết thời gian!");
+    } else {
+      alert("Lỗi khi lấy danh sách phân loại: " + error.message);
+    }
     return [];
   }
 }
