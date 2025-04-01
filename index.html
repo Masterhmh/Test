@@ -9,14 +9,14 @@
   <style>
 /* Nhóm: Các biến toàn cục */
 :root {
-  --primary-color: #007AFF;
+  --primary-color: #16A34A;
   --secondary-color: #6B7280;
   --background-color: #F7F9FC;
   --card-bg: #FFFFFF;
   --text-color: #1F2A44;
-  --gradient-start: #007AFF;
-  --gradient-end: #00C4FF;
-  --accent-color: #10B981;
+  --gradient-start: #16A34A;
+  --gradient-end: #4ADE80;  
+  --accent-color: #16A34A; 
 }
 
 /* Nhóm: Cấu hình chung cho trang */
@@ -61,7 +61,7 @@ body {
   top: 0; left: 0; right: 0;
   display: flex;
   justify-content: space-around;
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); /* Đã dùng gradient từ biến */
   padding: 15px 0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -140,7 +140,7 @@ select:focus, input[type="date"]:focus {
 
 button {
   padding: 0.6rem 1.5rem;
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); /* Đã dùng biến */
   color: white;
   border: none;
   cursor: pointer;
@@ -499,7 +499,7 @@ canvas#monthlyChart {
   display: inline-block;
   margin-top: 0;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); /* Đã dùng biến */
   color: white;
   border-radius: 12px;
   text-decoration: none;
@@ -509,7 +509,7 @@ canvas#monthlyChart {
 
 .cta-button:hover {
   transform: translateY(-3px);
-  background: linear-gradient(135deg, var(--gradient-end), var(--gradient-start));
+  background: linear-gradient(135deg, var(--gradient-end), var(--gradient-start)); /* Đảo ngược gradient */
 }
 
 .contact-columns {
@@ -587,40 +587,9 @@ canvas#monthlyChart {
   white-space: normal;
   word-wrap: break-word;
 }
-.transaction-box .edit-btn {
-  background: linear-gradient(135deg, #FFA500, #FF4500);
-  padding: 0.4rem 1rem;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  cursor: pointer;
-}
 
-.transaction-box .save-btn {
-  background: linear-gradient(135deg, #10B981, #059669);
-  padding: 0.4rem 1rem;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  cursor: pointer;
-}
-
-.transaction-box .edit-form {
-  display: none;
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.transaction-box .edit-form.active {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.transaction-box .edit-form input,
-.transaction-box .edit-form select {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #E5E7EB;
+.transaction-box .amount {
+  font-size: 1rem; /* Giảm kích thước số tiền */
 }
 
 /* Nhóm: Media Queries - Responsive Design */
@@ -776,6 +745,96 @@ canvas#monthlyChart {
   .qr-image { width: 400px; }
   .qr-caption { margin-top: 0.5rem; }
   .cta-button { padding: 0.75rem 1.5rem; font-size: 1rem; margin-top: 0; }
+}
+    /* Nhóm: Modal chỉnh sửa giao dịch */
+.edit-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-modal-content {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.edit-modal-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.edit-modal-content .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--secondary-color);
+}
+
+.edit-modal-content .form-group {
+  margin-bottom: 1rem;
+}
+
+.edit-modal-content label {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.edit-modal-content input,
+.edit-modal-content select,
+.edit-modal-content textarea {
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  background-color: #F8FAFC;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.3s;
+}
+
+.edit-modal-content input:focus,
+.edit-modal-content select:focus,
+.edit-modal-content textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.edit-modal-content textarea {
+  resize: none;
+  height: 80px;
+}
+
+.edit-modal-content .save-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.edit-modal-content .save-btn:hover {
+  transform: translateY(-2px);
 }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -937,7 +996,40 @@ canvas#monthlyChart {
     <!-- Giao dịch sẽ được hiển thị ở đây -->
   </div>
 </div>
-
+<div id="editModal" class="edit-modal">
+  <div class="edit-modal-content">
+    <span class="close-btn">×</span>
+    <h2>Chỉnh sửa giao dịch</h2>
+    <form id="editForm">
+      <div class="form-group">
+        <label for="editContent">Nội dung:</label>
+        <input type="text" id="editContent" required />
+      </div>
+      <div class="form-group">
+        <label for="editAmount">Số tiền (đ):</label>
+        <input type="number" id="editAmount" min="0" required />
+      </div>
+      <div class="form-group">
+        <label for="editType">Phân loại:</label>
+        <select id="editType" required>
+          <option value="Thu nhập">Thu nhập</option>
+          <option value="Chi tiêu">Chi tiêu</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="editCategory">Phân loại chi tiết:</label>
+        <select id="editCategory" required>
+          <!-- Các tùy chọn sẽ được điền động -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="editNote">Ghi chú (nếu có):</label>
+        <textarea id="editNote"></textarea>
+      </div>
+      <button type="submit" class="save-btn">Lưu</button>
+    </form>
+  </div>
+</div>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const apiUrl = urlParams.get('api');
@@ -1354,13 +1446,7 @@ function updateMonthlyChart(filteredData) {
   }
 
   try {
-    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`);
     const transactionData = await response.json();
     console.log("Transaction data received: ", transactionData);
     if (transactionData.error) {
@@ -1374,37 +1460,11 @@ function updateMonthlyChart(filteredData) {
   }
 };
     
-   // Hàm lấy danh sách danh mục từ API
-async function fetchCategories() {
-  try {
-    const response = await fetch(`${apiUrl}?action=getCategories&sheetId=${sheetId}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const data = await response.json();
-    if (data.error) {
-      throw new Error(data.error);
-    }
-    return data.categories || [];
-  } catch (error) {
-    console.error("Lỗi khi lấy danh sách danh mục: ", error);
-    return [];
-  }
-}
-
-// Sửa hàm displayTransactions
-async function displayTransactions(data) {
+   function displayTransactions(data) {
   console.log("Dữ liệu nhận được: ", data);
   const container = document.getElementById('transactionsContainer');
   const summaryContainer = document.getElementById('dailySummary');
   container.innerHTML = '';
-
-  // Lấy danh sách danh mục
-  const categories = await fetchCategories();
-
   if (data.error || !data || data.length === 0) {
     console.log("Không có giao dịch để hiển thị");
     container.innerHTML = '<div>Không có giao dịch trong ngày này</div>';
@@ -1424,7 +1484,6 @@ async function displayTransactions(data) {
     `;
     return;
   }
-
   let totalIncome = 0;
   let totalExpense = 0;
   data.forEach(item => {
@@ -1449,7 +1508,6 @@ async function displayTransactions(data) {
       <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
     </div>
   `;
-
   console.log("Hiển thị giao dịch: ", data.slice(0, 10));
   const limitedData = data.slice(0, 10);
   limitedData.forEach((item, index) => {
@@ -1457,17 +1515,11 @@ async function displayTransactions(data) {
     transactionBox.className = 'transaction-box';
     const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
     const typeClass = item.type === 'Thu nhập' ? 'income' : 'expense';
-
-    // Tạo danh sách tùy chọn cho dropdown "Phân loại chi tiết"
-    let categoryOptions = categories.map(cat => 
-      `<option value="${cat}" ${item.category === cat ? 'selected' : ''}>${cat}</option>`
-    ).join('');
-
     transactionBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; width: 100%;">
         <div style="flex: 1;">
           <div class="date">${item.date}</div>
-          <div class="amount" style="font-size: 1.5rem; color: ${amountColor}">${item.amount.toLocaleString('vi-VN')}đ</div>
+          <div class="amount" style="color: ${amountColor}">${item.amount.toLocaleString('vi-VN')}đ</div>
           <div class="content">Nội dung: ${item.content}${item.note ? ` (${item.note})` : ''}</div>
         </div>
         <div style="flex: 1; text-align: right;">
@@ -1475,74 +1527,119 @@ async function displayTransactions(data) {
           <div class="category">Phân loại chi tiết: ${item.category}</div>
         </div>
       </div>
-      <button class="edit-btn" onclick="toggleEditForm(${index})">Sửa</button>
-      <div class="edit-form" id="edit-form-${index}">
-        <input type="text" id="edit-content-${index}" value="${item.content}" placeholder="Nội dung">
-        <input type="number" id="edit-amount-${index}" value="${item.amount}" placeholder="Số tiền">
-        <select id="edit-type-${index}">
-          <option value="Thu nhập" ${item.type === 'Thu nhập' ? 'selected' : ''}>Thu nhập</option>
-          <option value="Chi tiêu" ${item.type === 'Chi tiêu' ? 'selected' : ''}>Chi tiêu</option>
-        </select>
-        <select id="edit-category-${index}">
-          ${categoryOptions}
-        </select>
-        <button class="save-btn" onclick="saveTransaction(${index}, '${item.date}', '${item.content}', ${item.amount})">Lưu</button>
-      </div>
+      <button class="edit-btn" data-index="${item.rowIndex}" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #4B5EAA; color: white; border: none; border-radius: 8px; cursor: pointer;">Sửa</button>
     `;
     container.appendChild(transactionBox);
   });
+
+  // Thêm sự kiện cho các nút "Sửa"
+  document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const rowIndex = this.getAttribute('data-index');
+      const transaction = data.find(item => item.rowIndex == rowIndex);
+      openEditModal(transaction);
+    });
+  });
 }
-
-// Hàm để bật/tắt form chỉnh sửa
-function toggleEditForm(index) {
-  const editForm = document.getElementById(`edit-form-${index}`);
-  editForm.classList.toggle('active');
-}
-
-async function saveTransaction(index, date, oldContent, oldAmount) {
-  const content = document.getElementById(`edit-content-${index}`).value;
-  const amount = parseInt(document.getElementById(`edit-amount-${index}`).value);
-  const type = document.getElementById(`edit-type-${index}`).value;
-  const category = document.getElementById(`edit-category-${index}`).value;
-
-  if (!content || !amount || !type || !category) {
-    alert("Vui lòng điền đầy đủ thông tin!");
-    return;
-  }
-
-  const updatedTransaction = {
-    action: 'updateTransaction',
-    sheetId: sheetId,
-    date: date,
-    oldContent: oldContent,
-    oldAmount: oldAmount,
-    content: content,
-    amount: amount,
-    type: type,
-    category: category
-  };
-
+    //Lấy danh sách danh mục từ sheet "Từ khóa"
+async function fetchCategories() {
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(`${apiUrl}?action=getCategories&sheetId=${sheetId}`);
+    const categoriesData = await response.json();
+    console.log("Danh sách danh mục nhận được: ", categoriesData);
+    if (categoriesData.error) {
+      throw new Error(categoriesData.error);
+    }
+    return categoriesData; // Mong đợi một mảng các tên danh mục
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách danh mục: ", error);
+    alert("Lỗi khi lấy danh sách phân loại chi tiết: " + error.message);
+    return [];
+  }
+}
+      // Xử lý logic cho modal chỉnh sửa
+    async function openEditModal(transaction) {
+  const modal = document.getElementById('editModal');
+  const editContent = document.getElementById('editContent');
+  const editAmount = document.getElementById('editAmount');
+  const editType = document.getElementById('editType');
+  const editCategory = document.getElementById('editCategory');
+  const editNote = document.getElementById('editNote');
+
+  // Điền dữ liệu vào form
+  editContent.value = transaction.content;
+  editAmount.value = transaction.amount;
+  editType.value = transaction.type;
+  editNote.value = transaction.note || '';
+
+  // Lấy và điền danh sách danh mục
+  const categories = await fetchCategories();
+  editCategory.innerHTML = '';
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    if (category === transaction.category) {
+      option.selected = true;
+    }
+    editCategory.appendChild(option);
+  });
+
+  // Hiển thị modal
+  modal.style.display = 'flex';
+
+  // Xử lý khi người dùng nhấn "Lưu"
+  const editForm = document.getElementById('editForm');
+  editForm.onsubmit = async function(e) {
+    e.preventDefault();
+    const updatedTransaction = {
+      rowIndex: transaction.rowIndex,
+      date: transaction.date,
+      content: editContent.value,
+      amount: parseInt(editAmount.value),
+      type: editType.value,
+      category: editCategory.value,
+      note: editNote.value
+    };
+    await updateTransaction(updatedTransaction);
+    modal.style.display = 'none';
+    // Làm mới danh sách giao dịch
+    window.fetchTransactions();
+  };
+}
+
+// Đóng modal khi nhấn nút đóng
+document.querySelector('.close-btn').addEventListener('click', function() {
+  document.getElementById('editModal').style.display = 'none';
+});
+
+// Đóng modal khi nhấn ra ngoài
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.style.display = 'none';
+  }
+});
+  // Thêm hàm cập nhật giao dịch
+    async function updateTransaction(updatedTransaction) {
+  try {
+    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(updatedTransaction)
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
     const result = await response.json();
+    console.log("Kết quả cập nhật: ", result);
     if (result.error) {
       throw new Error(result.error);
     }
     alert("Cập nhật giao dịch thành công!");
-    window.fetchTransactions(); // Làm mới danh sách giao dịch
   } catch (error) {
     console.error("Lỗi khi cập nhật giao dịch: ", error);
     alert("Lỗi khi cập nhật giao dịch: " + error.message);
   }
 }
-
     function getCurrentMonthRange() {
       const now = new Date();
       const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
