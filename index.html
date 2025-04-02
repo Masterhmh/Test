@@ -821,7 +821,7 @@ canvas#monthlyChart {
   .custom-legend-column { width: 48%; min-width: 280px; }
   .legend-text { font-size: 1rem; }
   .monthly-legend { 
-    max-width:.ConcurrentModificationException 500px;
+    max-width: 500px;
     font-size: 1rem; 
     gap: 0.5rem;
   }
@@ -858,18 +858,18 @@ canvas#monthlyChart {
 
 <div class="content-wrapper">
   <div id="tab1" class="tab-content">
-  <h1>THỐNG KÊ</h1>
-  <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
-  <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
-  <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
-  <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
-    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
-  </div>
-  <div class="input-group">
-    Từ: <input type="date" id="startDate"> 
-    Đến: <input type="date" id="endDate"> 
-    <button id="fetchDataBtn">Lọc</button>
-  </div>
+    <h1>THỐNG KÊ</h1>
+    <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
+    <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+    <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+    <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
+      <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+    </div>
+    <div class="input-group">
+      Từ: <input type="date" id="startDate"> 
+      Đến: <input type="date" id="endDate"> 
+      <button id="fetchDataBtn">Lọc</button>
+    </div>
     <div class="stats-container" id="statsContainer">
       <div class="stat-box income">
         <div class="title">Tổng thu nhập</div>
@@ -892,46 +892,46 @@ canvas#monthlyChart {
   </div>
 
   <div id="tab2" class="tab-content">
-  <h1>BIỂU ĐỒ THU CHI THEO THÁNG</h1>
-  <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
-  <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
-  <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
-  <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
-    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
-  </div>
-  <div class="input-group">
-    Từ: 
-    <select id="startMonth">
-      <option value="1">Tháng 1</option>
-      <option value="2">Tháng 2</option>
-      <option value="3">Tháng 3</option>
-      <option value="4">Tháng 4</option>
-      <option value="5">Tháng 5</option>
-      <option value="6">Tháng 6</option>
-      <option value="7">Tháng 7</option>
-      <option value="8">Tháng 8</option>
-      <option value="9">Tháng 9</option>
-      <option value="10">Tháng 10</option>
-      <option value="11">Tháng 11</option>
-      <option value="12">Tháng 12</option>
-    </select>
-    Đến: 
-    <select id="endMonth">
-      <option value="1">Tháng 1</option>
-      <option value="2">Tháng 2</option>
-      <option value="3">Tháng 3</option>
-      <option value="4">Tháng 4</option>
-      <option value="5">Tháng 5</option>
-      <option value="6">Tháng 6</option>
-      <option value="7">Tháng 7</option>
-      <option value="8">Tháng 8</option>
-      <option value="9">Tháng 9</option>
-      <option value="10">Tháng 10</option>
-      <option value="11">Tháng 11</option>
-      <option value="12">Tháng 12</option>
-    </select>
-    <button id="fetchMonthlyDataBtn">Lọc</button>
-  </div>
+    <h1>BIỂU ĐỒ THU CHI THEO THÁNG</h1>
+    <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
+    <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+    <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+    <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
+      <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+    </div>
+    <div class="input-group">
+      Từ: 
+      <select id="startMonth">
+        <option value="1">Tháng 1</option>
+        <option value="2">Tháng 2</option>
+        <option value="3">Tháng 3</option>
+        <option value="4">Tháng 4</option>
+        <option value="5">Tháng 5</option>
+        <option value="6">Tháng 6</option>
+        <option value="7">Tháng 7</option>
+        <option value="8">Tháng 8</option>
+        <option value="9">Tháng 9</option>
+        <option value="10">Tháng 10</option>
+        <option value="11">Tháng 11</option>
+        <option value="12">Tháng 12</option>
+      </select>
+      Đến: 
+      <select id="endMonth">
+        <option value="1">Tháng 1</option>
+        <option value="2">Tháng 2</option>
+        <option value="3">Tháng 3</option>
+        <option value="4">Tháng 4</option>
+        <option value="5">Tháng 5</option>
+        <option value="6">Tháng 6</option>
+        <option value="7">Tháng 7</option>
+        <option value="8">Tháng 8</option>
+        <option value="9">Tháng 9</option>
+        <option value="10">Tháng 10</option>
+        <option value="11">Tháng 11</option>
+        <option value="12">Tháng 12</option>
+      </select>
+      <button id="fetchMonthlyDataBtn">Lọc</button>
+    </div>
     <div class="chart-container">
       <canvas id="monthlyChart"></canvas>
       <div class="monthly-legend" id="monthlyLegend"></div>
@@ -979,17 +979,17 @@ canvas#monthlyChart {
   </div>
 
   <div id="tab4" class="tab-content active">
-  <h1>GIAO DỊCH TRONG NGÀY</h1>
-  <p class="notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
-  <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
-  <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
-  <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
-    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
-  </div>
-  <div class="input-group">
-    Ngày: <input type="date" id="transactionDate">
-    <button id="fetchTransactionsBtn">Lọc</button>
-  </div>
+    <h1>GIAO DỊCH TRONG NGÀY</h1>
+    <p class="notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
+    <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+    <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+    <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
+      <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+    </div>
+    <div class="input-group">
+      Ngày: <input type="date" id="transactionDate">
+      <button id="fetchTransactionsBtn">Lọc</button>
+    </div>
     <div class="stats-container" id="dailySummary">
       <div class="stat-box income">
         <div class="title">Tổng thu nhập</div>
@@ -1150,7 +1150,7 @@ function updateFinancialData(data) {
         <div class="title">Tổng thu nhập</div>
         <div class="amount no-data">Không có<br>dữ liệu</div>
       </div>
-            <div class="stat-box expense">
+      <div class="stat-box expense">
         <div class="title">Tổng chi tiêu</div>
         <div class="amount no-data">Không có<br>dữ liệu</div>
       </div>
@@ -1617,19 +1617,20 @@ function displayTransactions(data) {
   });
 
   document.querySelectorAll('.edit-btn').forEach(button => {
-  button.addEventListener('click', function() {
-    const transactionId = this.getAttribute('data-id');
-    console.log('Transaction ID:', transactionId);
-    const transaction = limitedData.find(item => item.id === transactionId);
-    console.log('Transaction found:', transaction);
-    if (!transaction) {
-      console.error(`Không tìm thấy giao dịch với ID: ${transactionId}`);
-      showError('Không tìm thấy giao dịch để chỉnh sửa!');
-      return;
-    }
-    openEditForm(transaction);
+    button.addEventListener('click', function() {
+      const transactionId = this.getAttribute('data-id');
+      console.log('Transaction ID:', transactionId);
+      const transaction = limitedData.find(item => item.id === transactionId);
+      console.log('Transaction found:', transaction);
+      if (!transaction) {
+        console.error(`Không tìm thấy giao dịch với ID: ${transactionId}`);
+        showError('Không tìm thấy giao dịch để chỉnh sửa!');
+        return;
+      }
+      openEditForm(transaction);
+    });
   });
-});
+}
 
 // ✅ Lấy khoảng thời gian tháng hiện tại
 function getCurrentMonthRange() {
@@ -1701,6 +1702,7 @@ async function openEditForm(transaction) {
 
   modal.style.display = 'flex';
   console.log('Modal display set to flex');
+
   form.onsubmit = async function(e) {
     e.preventDefault();
     const dateInput = document.getElementById('editDate').value;
@@ -1721,6 +1723,7 @@ async function openEditForm(transaction) {
     await saveTransaction(updatedTransaction);
   };
 }
+
 // ✅ Đóng form chỉnh sửa giao dịch
 function closeEditForm() {
   const modal = document.getElementById('editModal');
