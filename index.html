@@ -844,6 +844,7 @@ window.fetchMonthlyData = async function() {
     return;
   }
 
+  showLoading(true, 'tab2'); // Hiển thị icon loading trước khi fetch dữ liệu
   try {
     const response = await fetch(`${apiUrl}?action=getMonthlyData&year=${year}&sheetId=${sheetId}`);
     const monthlyData = await response.json();
@@ -874,6 +875,8 @@ window.fetchMonthlyData = async function() {
       expense: 0
     }));
     updateMonthlyChart(filteredData);
+  } finally {
+    showLoading(false, 'tab2'); // Ẩn icon loading sau khi hoàn tất (dù thành công hay thất bại)
   }
 };
 
