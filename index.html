@@ -880,8 +880,14 @@ window.fetchMonthlyData = async function() {
 // Cập nhật biểu đồ tháng (Tab 2)
 function updateMonthlyChart(filteredData) {
   const ctx = document.getElementById('monthlyChart').getContext('2d');
+
+  // Kiểm tra và hủy biểu đồ cũ nếu tồn tại và có phương thức destroy
   if (window.monthlyChart && typeof window.monthlyChart.destroy === 'function') {
-    window.monthlyChart.destroy();
+    try {
+      window.monthlyChart.destroy();
+    } catch (error) {
+      console.error("Lỗi khi hủy biểu đồ cũ: ", error);
+    }
   }
 
   if (!filteredData || filteredData.length === 0) {
@@ -995,7 +1001,7 @@ function updateMonthlyChart(filteredData) {
   filteredData.forEach(item => {
     const difference = (item.income || 0) - (item.expense || 0);
     const diffClass = difference >= 0 ? 'positive' : 'negative';
-    const diffIcon = difference >= 0 ? 'fa-amazon-up' : 'fa-arrow-down';
+    const diffIcon = difference >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'; // Sửa lỗi 'fa-amazon-up' thành 'fa-arrow-up'
     const monthItem = document.createElement('div');
     monthItem.className = 'month-item';
     monthItem.innerHTML = `
