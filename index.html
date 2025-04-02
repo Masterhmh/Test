@@ -727,19 +727,31 @@ function updateFinancialData(data) {
   `;
 }
 
-// Cập nhật biểu đồ chi tiêu
+// Cập nhật biểu đồ chi tiêu (Tab 1)
 function updateChartData(response) {
   if (response.error) {
     showError(response.error, 'tab1');
-    if (window.myChart) window.myChart.destroy();
+    if (window.myChart && typeof window.myChart.destroy === 'function') {
+      window.myChart.destroy();
+    }
     return;
   }
   const chartData = response.chartData;
   const categories = response.categories;
   const ctx = document.getElementById('myChart').getContext('2d');
-  if (window.myChart) window.myChart.destroy();
+  if (window.myChart && typeof window.myChart.destroy === 'function') {
+    window.myChart.destroy();
+  }
   const totalAmount = chartData.reduce((sum, item) => sum + item.amount, 0);
-  const backgroundColors = ['#FF6B6B', '#FF9F45', '#FFE156', '#7DC95E', '#40C4FF', '#5A92FF', '#9B5DE5', '#FF66C4'];
+  const backgroundColors = [
+    '#FF6B6B', '#FF9F45', '#FFE156', '#7DC95E', '#40C4FF',
+    '#5A92FF', '#9B5DE5', '#FF66C4', '#FF7D7D', '#F88F70',
+    '#54A0FF', '#C084FC', '#FF82A9', '#6DCFF6', '#FFACC5',
+    '#E4C1F9', '#FF928B', '#FDCB98', '#B5E2FA', '#91E8BC',
+    '#FFD166', '#FF8E72', '#E57373', '#74D3AE', '#43BCCD',
+    '#D1B3E0', '#F78F8F', '#F6B17A', '#F4A261', '#FF6392',
+    '#66D9E8', '#FF85A1', '#6A0572', '#FC7A57', '#A29BFE'
+  ];
   const customLegend = document.getElementById('customLegend');
   customLegend.innerHTML = '';
   const leftColumn = document.createElement('div');
@@ -754,10 +766,16 @@ function updateChartData(response) {
     legendItem.className = 'legend-item';
     legendItem.innerHTML = `
       <span class="legend-color" style="background-color: ${color};"></span>
-      <span class="legend-text">${item.category}: <span class="legend-value">${item.amount.toLocaleString('vi-VN')}đ (${percentage}%)</span></span>
+      <span class="legend-text">
+        ${item.category}:
+        <span class="legend-value">${item.amount.toLocaleString('vi-VN')}đ (${percentage}%)</span>
+      </span>
     `;
-    if (i % 2 === 0) leftColumn.appendChild(legendItem);
-    else rightColumn.appendChild(legendItem);
+    if (i % 2 === 0) {
+      leftColumn.appendChild(legendItem);
+    } else {
+      rightColumn.appendChild(legendItem);
+    }
   });
   customLegend.appendChild(leftColumn);
   customLegend.appendChild(rightColumn);
@@ -765,14 +783,50 @@ function updateChartData(response) {
     type: 'pie',
     data: {
       labels: chartData.map(item => item.category),
-      datasets: [{ data: chartData.map(item => item.amount), backgroundColor: chartData.map((item, i) => backgroundColors[i % backgroundColors.length]) }]
+      datasets: [{
+        data: chartData.map(item => item.amount),
+        backgroundColor: chartData.map(item => {
+          const index = categories.indexOf(item.category);
+          return backgroundColors[index % backgroundColors.length];
+        })
+      }]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: (tooltipItem) => `${tooltipItem.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ (${((tooltipItem.raw / totalAmount) * 100).toFixed(1)}%)` } },
-        datalabels: { formatter: (value) => value.toLocaleString('vi-VN') + 'đ', color: '#fff', font: { weight: 'bold' } }
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function(tooltipItem) {
+              const category = tooltipItem.label;
+              const amount = tooltipItem.raw;
+              const percentage = ((amount / totalAmount) * 100).toFixed(1);
+              return `${category}: ${amount.toLocaleString('vi-VN')}đ (${percentage}%)`;
+            }
+          },
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleFont: { size: 12 },
+          bodyFont: { size: 10 },
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          padding: 8,
+          displayColors: true,
+        },
+        datalabels: {
+          formatter: (value, context) => {
+            const percentage = ((value / totalAmount) * 100).toFixed(1);
+            return percentage >= 1 ? `${value.toLocaleString('vi-VN')}đ (${percentage}%)` : '';
+          },
+          color: '#fff',
+          font: { weight: 'bold', size: 12 },
+          anchor: 'end',
+          align: 'end',
+          clamp: true
+        }
       }
     }
   });
@@ -780,43 +834,55 @@ function updateChartData(response) {
 </script>
 <script>
 // Lấy dữ liệu biểu đồ tháng (Tab 2)
-let cachedMonthlyData = null;
-
 window.fetchMonthlyData = async function() {
   const startMonth = parseInt(document.getElementById('startMonth').value);
   const endMonth = parseInt(document.getElementById('endMonth').value);
   const year = new Date().getFullYear();
+  console.log("Fetching monthly data from month: " + startMonth + " to: " + endMonth);
   if (startMonth > endMonth) {
-    showError("Tháng bắt đầu không thể lớn hơn tháng kết thúc!", 'tab2');
+    alert("Tháng bắt đầu không thể lớn hơn tháng kết thúc!");
     return;
   }
 
-  const cacheKey = `${startMonth}-${endMonth}-${year}`;
-  if (cachedMonthlyData && cachedMonthlyData.cacheKey === cacheKey) {
-    updateMonthlyChart(cachedMonthlyData.data);
-    return;
-  }
-
-  showLoading(true, 'tab2');
   try {
     const response = await fetch(`${apiUrl}?action=getMonthlyData&year=${year}&sheetId=${sheetId}`);
     const monthlyData = await response.json();
-    if (monthlyData.error) throw new Error(monthlyData.error);
-    const filteredData = monthlyData.filter(item => item.month >= startMonth && item.month <= endMonth);
-    cachedMonthlyData = { cacheKey, data: filteredData };
+    console.log("Monthly data received: ", monthlyData);
+    if (monthlyData.error) {
+      throw new Error(monthlyData.error);
+    }
+
+    const fullYearData = Array.from({ length: 12 }, (_, i) => {
+      const month = i + 1;
+      const existingData = monthlyData.find(item => item.month === month);
+      return existingData || { month, income: 0, expense: 0 };
+    });
+
+    const filteredData = Array.from({ length: endMonth - startMonth + 1 }, (_, i) => {
+      const month = startMonth + i;
+      const existingData = fullYearData.find(item => item.month === month);
+      return existingData || { month, income: 0, expense: 0 };
+    });
+
     updateMonthlyChart(filteredData);
   } catch (error) {
-    showError("Lỗi khi lấy dữ liệu biểu đồ tháng: " + error.message, 'tab2');
-    updateMonthlyChart([]);
-  } finally {
-    showLoading(false, 'tab2');
+    console.error("Error fetching monthly data: ", error);
+    alert("Lỗi khi lấy dữ liệu biểu đồ tháng: " + error.message);
+    const filteredData = Array.from({ length: endMonth - startMonth + 1 }, (_, i) => ({
+      month: startMonth + i,
+      income: 0,
+      expense: 0
+    }));
+    updateMonthlyChart(filteredData);
   }
 };
 
-// Cập nhật biểu đồ tháng
+// Cập nhật biểu đồ tháng (Tab 2)
 function updateMonthlyChart(filteredData) {
   const ctx = document.getElementById('monthlyChart').getContext('2d');
-  if (window.monthlyChart) window.monthlyChart.destroy();
+  if (window.monthlyChart && typeof window.monthlyChart.destroy === 'function') {
+    window.monthlyChart.destroy();
+  }
 
   if (!filteredData || filteredData.length === 0) {
     window.monthlyChart = new Chart(ctx, {
@@ -830,8 +896,32 @@ function updateMonthlyChart(filteredData) {
       },
       options: {
         responsive: true,
-        scales: { y: { beginAtZero: true } },
-        plugins: { legend: { display: true }, datalabels: { display: false } }
+        maintainAspectRatio: true,
+        aspectRatio: 1,
+        scales: {
+          y: { 
+            beginAtZero: true, 
+            title: { display: true, text: 'Số tiền (đ)', font: { size: 14 } }, 
+            ticks: { font: { size: 12 } } 
+          },
+          x: { 
+            title: { display: true, text: 'Tháng', font: { size: 14 } }, 
+            ticks: { font: { size: 12 } } 
+          }
+        },
+        plugins: {
+          legend: { display: true, labels: { font: { size: 12 } } },
+          tooltip: {
+            titleFont: { size: 12 },
+            bodyFont: { size: 12 },
+            callbacks: {
+              label: function(tooltipItem) {
+                return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ`;
+              }
+            }
+          },
+          datalabels: { display: false }
+        }
       }
     });
     document.getElementById('monthlyLegend').innerHTML = '<div>Không có dữ liệu</div>';
@@ -839,26 +929,60 @@ function updateMonthlyChart(filteredData) {
   }
 
   const labels = filteredData.map(item => `Tháng ${item.month}`);
-  const incomes = filteredData.map(item => item.income || 0); // Đảm bảo có giá trị mặc định
-  const expenses = filteredData.map(item => item.expense || 0); // Đảm bảo có giá trị mặc định
+  const incomes = filteredData.map(item => item.income || 0);
+  const expenses = filteredData.map(item => item.expense || 0);
+
   window.monthlyChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels,
+      labels: labels,
       datasets: [
-        { label: 'Thu nhập', data: incomes, backgroundColor: '#10B981' },
-        { label: 'Chi tiêu', data: expenses, backgroundColor: '#EF4444' }
+        { label: 'Thu nhập', data: incomes, backgroundColor: '#10B981', borderColor: '#10B981', borderWidth: 1 },
+        { label: 'Chi tiêu', data: expenses, backgroundColor: '#EF4444', borderColor: '#EF4444', borderWidth: 1 }
       ]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1,
       scales: {
-        y: { beginAtZero: true, ticks: { callback: value => value.toLocaleString('vi-VN') + 'đ' } },
-        x: { ticks: { maxRotation: 45, minRotation: 45 } }
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Số tiền (đ)', font: { size: 14 } },
+          ticks: {
+            callback: function(value) { return value.toLocaleString('vi-VN') + 'đ'; },
+            font: { size: 12 }
+          }
+        },
+        x: {
+          title: { display: true, text: 'Tháng', font: { size: 14 } },
+          ticks: {
+            font: { size: 10 },
+            maxRotation: 45,
+            minRotation: 45,
+            autoSkip: false
+          }
+        }
       },
       plugins: {
-        tooltip: { callbacks: { label: tooltipItem => `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ` } },
-        datalabels: { formatter: value => value.toLocaleString('vi-VN') + 'đ', color: '#1F2A44' }
+        legend: { display: true, labels: { font: { size: 12 } } },
+        tooltip: {
+          titleFont: { size: 12 },
+          bodyFont: { size: 12 },
+          callbacks: {
+            label: function(tooltipItem) {
+              return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ`;
+            }
+          }
+        },
+        datalabels: {
+          display: true,
+          align: 'end',
+          anchor: 'end',
+          formatter: (value) => value.toLocaleString('vi-VN') + 'đ',
+          color: '#1F2A44',
+          font: { weight: 'bold', size: 12 }
+        }
       }
     }
   });
@@ -867,10 +991,11 @@ function updateMonthlyChart(filteredData) {
   monthlyLegend.innerHTML = '';
   const column = document.createElement('div');
   column.className = 'monthly-column';
+
   filteredData.forEach(item => {
     const difference = (item.income || 0) - (item.expense || 0);
     const diffClass = difference >= 0 ? 'positive' : 'negative';
-    const diffIcon = difference >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+    const diffIcon = difference >= 0 ? 'fa-amazon-up' : 'fa-arrow-down';
     const monthItem = document.createElement('div');
     monthItem.className = 'month-item';
     monthItem.innerHTML = `
@@ -881,6 +1006,7 @@ function updateMonthlyChart(filteredData) {
     `;
     column.appendChild(monthItem);
   });
+
   monthlyLegend.appendChild(column);
 }
 </script>
