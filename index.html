@@ -1503,11 +1503,14 @@ window.fetchTransactions = async function() {
     return;
   }
 
-  // Chuyển định dạng từ YYYY-MM-DD sang DD/MM/YYYY
+  // transactionDate đã có định dạng YYYY-MM-DD (ví dụ: "2025-04-02")
+  // Gửi trực tiếp định dạng này lên API
+  const dateForApi = transactionDate;
+
+  // Định dạng ngày để hiển thị (DD/MM/YYYY)
   const [year, month, day] = transactionDate.split('-');
-  const formattedDate = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
-  console.log("Formatted date sent to API: " + formattedDate);
-  const cacheKey = formattedDate;
+  const formattedDateForDisplay = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+  const cacheKey = formattedDateForDisplay;
 
   if (cachedTransactions && cachedTransactions.cacheKey === cacheKey) {
     console.log("Using cached transactions: ", cachedTransactions.data);
@@ -1515,9 +1518,9 @@ window.fetchTransactions = async function() {
     return;
   }
 
-  showLoading(true, 'tab4'); // Thêm loading cho Tab 4
+  showLoading(true, 'tab4');
   try {
-    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${encodeURIComponent(formattedDate)}&sheetId=${sheetId}`);
+    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${encodeURIComponent(dateForApi)}&sheetId=${sheetId}`);
     const transactionData = await response.json();
     console.log("Transaction data received from API: ", transactionData);
     if (transactionData.error) {
@@ -1530,7 +1533,7 @@ window.fetchTransactions = async function() {
     showError("Lỗi khi lấy dữ liệu giao dịch: " + error.message, 'tab4');
     displayTransactions({ error: true });
   } finally {
-    showLoading(false, 'tab4'); // Tắt loading
+    showLoading(false, 'tab4');
   }
 };
 // ✅ Định dạng ngày thành DD/MM/YYYY với số 0 ở trước
