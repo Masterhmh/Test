@@ -858,10 +858,10 @@ canvas#monthlyChart {
 
 <div class="content-wrapper">
   <div id="tab1" class="tab-content">
-    <h1>THỐNG KÊ</h1>
-    <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
-    <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <h1>THỐNG KÊ</h1>
+  <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
+  <div id="errorMessageTab1" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <div id="successMessageTab1" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
     <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
       <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
     </div>
@@ -892,10 +892,10 @@ canvas#monthlyChart {
   </div>
 
   <div id="tab2" class="tab-content">
-    <h1>BIỂU ĐỒ THU CHI THEO THÁNG</h1>
-    <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
-    <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <h1>BIỂU ĐỒ THU CHI THEO THÁNG</h1>
+  <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
+  <div id="errorMessageTab2" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <div id="successMessageTab2" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
     <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
       <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
     </div>
@@ -979,10 +979,10 @@ canvas#monthlyChart {
   </div>
 
   <div id="tab4" class="tab-content active">
-    <h1>GIAO DỊCH TRONG NGÀY</h1>
-    <p class="notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
-    <div id="errorMessage" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="successMessage" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <h1>GIAO DỊCH TRONG NGÀY</h1>
+  <p class="notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
+  <div id="errorMessageTab4" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <div id="successMessageTab4" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
     <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
       <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
     </div>
@@ -1055,18 +1055,26 @@ if (!apiUrl || !sheetId) {
 }
 
 // ✅ Hàm hiển thị thông báo lỗi và thành công
-function showError(message) {
-  const errorDiv = document.getElementById('errorMessage');
-  errorDiv.textContent = message;
-  errorDiv.style.display = 'block';
-  setTimeout(() => errorDiv.style.display = 'none', 5000);
+function showError(message, tabId) {
+  const errorDiv = document.getElementById(`errorMessage${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+  if (errorDiv) {
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    setTimeout(() => errorDiv.style.display = 'none', 5000);
+  } else {
+    console.error(`Không tìm thấy errorMessage cho tab: ${tabId}`);
+  }
 }
 
-function showSuccess(message) {
-  const successDiv = document.getElementById('successMessage');
-  successDiv.textContent = message;
-  successDiv.style.display = 'block';
-  setTimeout(() => successDiv.style.display = 'none', 5000);
+function showSuccess(message, tabId) {
+  const successDiv = document.getElementById(`successMessage${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+  if (successDiv) {
+    successDiv.textContent = message;
+    successDiv.style.display = 'block';
+    setTimeout(() => successDiv.style.display = 'none', 5000);
+  } else {
+    console.error(`Không tìm thấy successMessage cho tab: ${tabId}`);
+  }
 }
 
 function showLoading(show) {
@@ -1093,13 +1101,13 @@ window.fetchData = async function() {
   const endDateInput = document.getElementById('endDate').value;
   console.log("Fetching data from: " + startDateInput + " to: " + endDateInput);
   if (!startDateInput || !endDateInput) {
-    showError("Vui lòng chọn khoảng thời gian!");
+    showError("Vui lòng chọn khoảng thời gian!", 'tab1');
     return;
   }
   const startDate = new Date(startDateInput);
   const endDate = new Date(endDateInput);
   if (startDate > endDate) {
-    showError("Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
+    showError("Ngày bắt đầu không thể lớn hơn ngày kết thúc!", 'tab1');
     return;
   }
 
@@ -1131,7 +1139,7 @@ window.fetchData = async function() {
     updateChartData(chartData);
   } catch (error) {
     console.error("Error fetching data: ", error);
-    showError("Lỗi khi lấy dữ liệu: " + error.message);
+    showError("Lỗi khi lấy dữ liệu: " + error.message, 'tab1');
     updateFinancialData({ error: true });
   } finally {
     showLoading(false);
@@ -1315,7 +1323,7 @@ window.fetchMonthlyData = async function() {
   const year = new Date().getFullYear();
   console.log("Fetching monthly data from month: " + startMonth + " to: " + endMonth);
   if (startMonth > endMonth) {
-    showError("Tháng bắt đầu không thể lớn hơn tháng kết thúc!");
+    showError("Tháng bắt đầu không thể lớn hơn tháng kết thúc!", 'tab2');
     return;
   }
 
@@ -1350,7 +1358,7 @@ window.fetchMonthlyData = async function() {
     updateMonthlyChart(filteredData);
   } catch (error) {
     console.error("Error fetching monthly data: ", error);
-    showError("Lỗi khi lấy dữ liệu biểu đồ tháng: " + error.message);
+    showError("Lỗi khi lấy dữ liệu biểu đồ tháng: " + error.message, 'tab2');
     const filteredData = Array.from({ length: endMonth - startMonth + 1 }, (_, i) => ({
       month: startMonth + i,
       income: 0,
@@ -1501,18 +1509,20 @@ let cachedTransactions = null;
 
 window.fetchTransactions = async function() {
   const transactionDate = document.getElementById('transactionDate').value;
-  console.log("Fetching transactions for date: " + transactionDate);
+  console.log("Fetching transactions for date (input): " + transactionDate);
   if (!transactionDate) {
-    showError("Vui lòng chọn ngày để xem giao dịch!");
+    showError("Vui lòng chọn ngày để xem giao dịch!", 'tab4');
     return;
   }
 
-  // Chuyển định dạng từ YYYY-MM-DD sang DD/MM/YYYY một cách chính xác
+  // Chuyển định dạng từ YYYY-MM-DD sang DD/MM/YYYY
   const [year, month, day] = transactionDate.split('-');
   const formattedDate = `${day}/${month}/${year}`;
+  console.log("Formatted date sent to API: " + formattedDate);
   const cacheKey = formattedDate;
 
   if (cachedTransactions && cachedTransactions.cacheKey === cacheKey) {
+    console.log("Using cached transactions: ", cachedTransactions.data);
     displayTransactions(cachedTransactions.data);
     return;
   }
@@ -1521,15 +1531,15 @@ window.fetchTransactions = async function() {
   try {
     const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${formattedDate}&sheetId=${sheetId}`);
     const transactionData = await response.json();
-    console.log("Transaction data received: ", transactionData);
+    console.log("Transaction data received from API: ", transactionData);
     if (transactionData.error) {
       throw new Error(transactionData.error);
     }
     cachedTransactions = { cacheKey, data: transactionData };
-    displayTransactions(transactionData);
+    displayTransactions(cachedTransactions.data);
   } catch (error) {
     console.error("Error fetching transactions: ", error.message);
-    showError("Lỗi khi lấy dữ liệu giao dịch: " + error.message);
+    showError("Lỗi khi lấy dữ liệu giao dịch: " + error.message, 'tab4');
     displayTransactions({ error: true });
   } finally {
     showLoading(false);
@@ -1551,7 +1561,7 @@ function formatDate(dateStr) {
 
 // ✅ Hiển thị giao dịch (Tab 4)
 function displayTransactions(data) {
-  console.log("Dữ liệu nhận được: ", data);
+  console.log("Dữ liệu giao dịch nhận được để hiển thị: ", data);
   const container = document.getElementById('transactionsContainer');
   const summaryContainer = document.getElementById('dailySummary');
   container.innerHTML = '';
@@ -1598,9 +1608,10 @@ function displayTransactions(data) {
       <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
     </div>
   `;
-  console.log("Hiển thị giao dịch: ", data.slice(0, 10));
+  console.log("Hiển thị giao dịch (giới hạn 10): ", data.slice(0, 10));
   const limitedData = data.slice(0, 10);
   limitedData.forEach(item => {
+    console.log("Hiển thị giao dịch với ngày: ", item.date);
     const transactionBox = document.createElement('div');
     transactionBox.className = 'transaction-box';
     const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
@@ -1630,14 +1641,13 @@ function displayTransactions(data) {
       console.log('Transaction found:', transaction);
       if (!transaction) {
         console.error(`Không tìm thấy giao dịch với ID: ${transactionId}`);
-        showError('Không tìm thấy giao dịch để chỉnh sửa!');
+        showError('Không tìm thấy giao dịch để chỉnh sửa!', 'tab4');
         return;
       }
       openEditForm(transaction);
     });
   });
 }
-
 // ✅ Lấy khoảng thời gian tháng hiện tại
 function getCurrentMonthRange() {
   const now = new Date();
@@ -1678,7 +1688,7 @@ async function fetchCategories() {
 async function openEditForm(transaction) {
   if (!transaction) {
     console.error('Transaction không hợp lệ:', transaction);
-    showError('Dữ liệu giao dịch không hợp lệ!');
+    showError('Dữ liệu giao dịch không hợp lệ!', 'tab4');
     return;
   }
 
@@ -1713,7 +1723,7 @@ async function openEditForm(transaction) {
     e.preventDefault();
     const dateInput = document.getElementById('editDate').value;
     if (!/^\d{1,2}\/\d{1,2}$/.test(dateInput)) {
-      showError('Ngày phải có định dạng dd/MM (ví dụ: 05/03)');
+      showError('Ngày phải có định dạng dd/MM (ví dụ: 05/03)', 'tab4');
       return;
     }
     const updatedTransaction = {
@@ -1752,12 +1762,12 @@ async function saveTransaction(updatedTransaction) {
     if (result.error) {
       throw new Error(result.error);
     }
-    showSuccess("Cập nhật giao dịch thành công!");
+    showSuccess("Cập nhật giao dịch thành công!", 'tab4');
     closeEditForm();
     window.fetchTransactions();
   } catch (error) {
     console.error("Error updating transaction: ", error);
-    showError("Lỗi khi cập nhật giao dịch: " + error.message);
+    showError("Lỗi khi cập nhật giao dịch: " + error.message, 'tab4');
   } finally {
     showLoading(false);
   }
