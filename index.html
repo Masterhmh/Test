@@ -1327,10 +1327,26 @@ function closeAddForm() { document.getElementById('addModal').style.display = 'n
 async function saveTransaction(updatedTransaction) {
   showLoading(true, 'tab4');
   try {
+    // Chuyển đổi định dạng ngày từ YYYY-MM-DD thành DD/MM
+    const dateParts = updatedTransaction.date.split('-'); // YYYY-MM-DD
+    const formattedDate = `${dateParts[2]}/${dateParts[1]}`; // DD/MM
+    const transactionToSend = { ...updatedTransaction, date: formattedDate };
+
+    // Loại bỏ trường 'action' khỏi đối tượng transactionToSend
+    const { action, ...transactionData } = transactionToSend;
+
+    // Ghi log dữ liệu để kiểm tra
+    console.log("Dữ liệu giao dịch được gửi:", transactionData);
+
+    // Đảm bảo id có giá trị
+    if (!transactionData.id) {
+      throw new Error("ID giao dịch không hợp lệ!");
+    }
+
     const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedTransaction)
+      body: JSON.stringify(transactionData)
     });
     const result = await response.json();
     if (result.error) throw new Error(result.error);
@@ -1370,8 +1386,10 @@ async function deleteTransaction(transactionId) {
   if (!confirm("Bạn có chắc chắn muốn xóa giao dịch này?")) return;
   showLoading(true, 'tab4');
   try {
-    const response = await fetch(`${apiUrl}?action=deleteTransaction&sheetId=${sheetId}&id=${transactionId}`, {
-      method: 'POST'
+    const response = await fetch(`${apiUrl}?action=deleteTransaction&sheetId=${sheetId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: transactionId })
     });
     const result = await response.json();
     if (result.error) throw new Error(result.error);
