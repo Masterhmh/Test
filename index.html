@@ -434,19 +434,19 @@ canvas#monthlyChart {
 </div>
 
 <div class="content-wrapper">
-  <div id="tab1" class="tab-content">
-    <h1>THỐNG KÊ</h1>
-    <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
-    <div id="errorMessageTab1" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="successMessageTab1" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
-      <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
-    </div>
-    <div class="input-group">
-      Từ: <input type="date" id="startDate"> 
-      Đến: <input type="date" id="endDate"> 
-      <button id="fetchDataBtn">Lọc</button>
-    </div>
+ <div id="tab1" class="tab-content">
+  <h1>THỐNG KẾ</h1>
+  <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
+  <div id="errorMessageTab1" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <div id="successMessageTab1" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <div id="loadingTab1" style="display: none; text-align: center; margin: 1rem 0;"> <!-- Đổi từ id="loading" thành id="loadingTab1" -->
+    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+  </div>
+  <div class="input-group">
+    Từ: <input type="date" id="startDate"> 
+    Đến: <input type="date" id="endDate"> 
+    <button id="fetchDataBtn">Lọc</button>
+  </div>
     <div class="stats-container" id="statsContainer">
       <div class="stat-box income"><div class="title">Tổng thu nhập</div><div class="amount">0đ</div></div>
       <div class="stat-box expense"><div class="title">Tổng chi tiêu</div><div class="amount">0đ</div></div>
