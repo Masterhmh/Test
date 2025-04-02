@@ -1014,8 +1014,8 @@ canvas#monthlyChart {
     <h2>Chỉnh sửa giao dịch</h2>
     <form id="editForm">
       <input type="hidden" id="editTransactionId">
-      <label for="editDate">Ngày (dd/MM):</label>
-      <input type="text" id="editDate" required pattern="\d{1,2}/\d{1,2}" placeholder="dd/MM">
+      <label for="editDate">Ngày:</label>
+      <input type="date" id="editDate" required>
       
       <label for="editContent">Nội dung:</label>
       <input type="text" id="editContent" required>
@@ -1692,8 +1692,18 @@ async function openEditForm(transaction) {
   document.getElementById('editContent').value = transaction.content || '';
   document.getElementById('editAmount').value = transaction.amount || 0;
   document.getElementById('editType').value = transaction.type || 'Thu nhập';
-  document.getElementById('editDate').value = transaction.date ? transaction.date.split('/').slice(0, 2).join('/') : '';
   document.getElementById('editNote').value = transaction.note || '';
+
+  // Chuyển đổi ngày từ DD/MM/YYYY sang YYYY-MM-DD để hiển thị trong input type="date"
+  const dateParts = transaction.date.split('/');
+  if (dateParts.length !== 3) {
+    console.error('Định dạng ngày không hợp lệ:', transaction.date);
+    showError('Định dạng ngày không hợp lệ!', 'tab4');
+    return;
+  }
+  const [day, month, year] = dateParts;
+  const formattedDateForInput = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`; // YYYY-MM-DD
+  document.getElementById('editDate').value = formattedDateForInput;
 
   const categories = await fetchCategories();
   categorySelect.innerHTML = '';
@@ -1712,11 +1722,16 @@ async function openEditForm(transaction) {
 
   form.onsubmit = async function(e) {
     e.preventDefault();
-    const dateInput = document.getElementById('editDate').value;
-    if (!/^\d{1,2}\/\d{1,2}$/.test(dateInput)) {
-      showError('Ngày phải có định dạng dd/MM (ví dụ: 05/03)', 'tab4');
+    const dateInput = document.getElementById('editDate').value; // Định dạng YYYY-MM-DD
+    if (!dateInput) {
+      showError('Vui lòng chọn ngày!', 'tab4');
       return;
     }
+
+    // Chuyển đổi ngày từ YYYY-MM-DD sang DD/MM/YYYY để gửi lên API
+    const [year, month, day] = dateInput.split('-');
+    const formattedDateForApi = `${day}/${month}/${year}`; // DD/MM/YYYY
+
     const updatedTransaction = {
       id: document.getElementById('editTransactionId').value,
       content: document.getElementById('editContent').value,
@@ -1724,7 +1739,7 @@ async function openEditForm(transaction) {
       type: document.getElementById('editType').value,
       category: document.getElementById('editCategory').value,
       note: document.getElementById('editNote').value || '',
-      date: dateInput,
+      date: formattedDateForApi, // Gửi ngày dưới dạng DD/MM/YYYY
       action: 'updateTransaction'
     };
     await saveTransaction(updatedTransaction);
@@ -1739,9 +1754,9 @@ function closeEditForm() {
 
 // ✅ Lưu giao dịch đã chỉnh sửa
 async function saveTransaction(updatedTransaction) {
-  showLoading(true);
+  showLoading(true, 'tab4');
   try {
-    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -1760,7 +1775,7 @@ async function saveTransaction(updatedTransaction) {
     console.error("Error updating transaction: ", error);
     showError("Lỗi khi cập nhật giao dịch: " + error.message, 'tab4');
   } finally {
-    showLoading(false);
+    showLoading(false, 'tab4');
   }
 }
 
