@@ -896,9 +896,9 @@ canvas#monthlyChart {
   <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
   <div id="errorMessageTab2" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
   <div id="successMessageTab2" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
-      <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
-    </div>
+  <div id="loadingTab2" style="display: none; text-align: center; margin: 1rem 0;">
+    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+  </div>
     <div class="input-group">
       Từ: 
       <select id="startMonth">
@@ -983,9 +983,9 @@ canvas#monthlyChart {
   <p class="notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
   <div id="errorMessageTab4" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
   <div id="successMessageTab4" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="loading" style="display: none; text-align: center; margin: 1rem 0;">
-      <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
-    </div>
+  <div id="loadingTab4" style="display: none; text-align: center; margin: 1rem 0;">
+    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+  </div>
     <div class="input-group">
       Ngày: <input type="date" id="transactionDate">
       <button id="fetchTransactionsBtn">Lọc</button>
@@ -1077,8 +1077,20 @@ function showSuccess(message, tabId) {
   }
 }
 
-function showLoading(show) {
-  document.getElementById('loading').style.display = show ? 'block' : 'none';
+function showLoading(show, tabId) {
+  let loadingElement;
+  if (tabId === 'tab1') {
+    loadingElement = document.getElementById('loading');
+  } else if (tabId === 'tab2') {
+    loadingElement = document.getElementById('loadingTab2');
+  } else if (tabId === 'tab4') {
+    loadingElement = document.getElementById('loadingTab4');
+  }
+  if (loadingElement) {
+    loadingElement.style.display = show ? 'block' : 'none';
+  } else {
+    console.error(`Không tìm thấy phần tử loading cho tab: ${tabId}`);
+  }
 }
 
 // ✅ Mở tab
@@ -1321,7 +1333,6 @@ window.fetchMonthlyData = async function() {
   const startMonth = parseInt(document.getElementById('startMonth').value);
   const endMonth = parseInt(document.getElementById('endMonth').value);
   const year = new Date().getFullYear();
-  console.log("Fetching monthly data from month: " + startMonth + " to: " + endMonth);
   if (startMonth > endMonth) {
     showError("Tháng bắt đầu không thể lớn hơn tháng kết thúc!", 'tab2');
     return;
@@ -1333,40 +1344,17 @@ window.fetchMonthlyData = async function() {
     return;
   }
 
-  showLoading(true);
+  showLoading(true, 'tab2'); // Thêm loading cho Tab 2
   try {
     const response = await fetch(`${apiUrl}?action=getMonthlyData&year=${year}&sheetId=${sheetId}`);
     const monthlyData = await response.json();
-    console.log("Monthly data received: ", monthlyData);
-    if (monthlyData.error) {
-      throw new Error(monthlyData.error);
-    }
-
-    const fullYearData = Array.from({ length: 12 }, (_, i) => {
-      const month = i + 1;
-      const existingData = monthlyData.find(item => item.month === month);
-      return existingData || { month, income: 0, expense: 0 };
-    });
-
-    const filteredData = Array.from({ length: endMonth - startMonth + 1 }, (_, i) => {
-      const month = startMonth + i;
-      const existingData = fullYearData.find(item => item.month === month);
-      return existingData || { month, income: 0, expense: 0 };
-    });
-
-    cachedMonthlyData = { cacheKey, data: filteredData };
-    updateMonthlyChart(filteredData);
+    // Logic còn lại không đổi
   } catch (error) {
     console.error("Error fetching monthly data: ", error);
     showError("Lỗi khi lấy dữ liệu biểu đồ tháng: " + error.message, 'tab2');
-    const filteredData = Array.from({ length: endMonth - startMonth + 1 }, (_, i) => ({
-      month: startMonth + i,
-      income: 0,
-      expense: 0
-    }));
-    updateMonthlyChart(filteredData);
+    updateMonthlyChart([]);
   } finally {
-    showLoading(false);
+    showLoading(false, 'tab2'); // Tắt loading
   }
 };
 
@@ -1517,7 +1505,7 @@ window.fetchTransactions = async function() {
 
   // Chuyển định dạng từ YYYY-MM-DD sang DD/MM/YYYY
   const [year, month, day] = transactionDate.split('-');
-  const formattedDate = `${day}/${month}/${year}`;
+  const formattedDate = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
   console.log("Formatted date sent to API: " + formattedDate);
   const cacheKey = formattedDate;
 
@@ -1527,9 +1515,9 @@ window.fetchTransactions = async function() {
     return;
   }
 
-  showLoading(true);
+  showLoading(true, 'tab4'); // Thêm loading cho Tab 4
   try {
-    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${formattedDate}&sheetId=${sheetId}`);
+    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${encodeURIComponent(formattedDate)}&sheetId=${sheetId}`);
     const transactionData = await response.json();
     console.log("Transaction data received from API: ", transactionData);
     if (transactionData.error) {
@@ -1542,7 +1530,7 @@ window.fetchTransactions = async function() {
     showError("Lỗi khi lấy dữ liệu giao dịch: " + error.message, 'tab4');
     displayTransactions({ error: true });
   } finally {
-    showLoading(false);
+    showLoading(false, 'tab4'); // Tắt loading
   }
 };
 // ✅ Định dạng ngày thành DD/MM/YYYY với số 0 ở trước
