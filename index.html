@@ -1327,18 +1327,13 @@ function closeAddForm() { document.getElementById('addModal').style.display = 'n
 async function saveTransaction(updatedTransaction) {
   showLoading(true, 'tab4');
   try {
-    // Chuyển đổi định dạng ngày từ YYYY-MM-DD thành DD/MM
-    const dateParts = updatedTransaction.date.split('-'); // YYYY-MM-DD
-    const formattedDate = `${dateParts[2]}/${dateParts[1]}`; // DD/MM
+    const dateParts = updatedTransaction.date.split('-');
+    const formattedDate = `${dateParts[2]}/${dateParts[1]}`;
     const transactionToSend = { ...updatedTransaction, date: formattedDate };
-
-    // Loại bỏ trường 'action' khỏi đối tượng transactionToSend
     const { action, ...transactionData } = transactionToSend;
 
-    // Ghi log dữ liệu để kiểm tra
     console.log("Dữ liệu giao dịch được gửi:", transactionData);
 
-    // Đảm bảo id có giá trị
     if (!transactionData.id) {
       throw new Error("ID giao dịch không hợp lệ!");
     }
@@ -1349,11 +1344,13 @@ async function saveTransaction(updatedTransaction) {
       body: JSON.stringify(transactionData)
     });
     const result = await response.json();
+    console.log("Phản hồi từ server:", result); // Thêm log để debug
     if (result.error) throw new Error(result.error);
     showSuccess("Cập nhật giao dịch thành công!", 'tab4');
     closeEditForm();
     window.fetchTransactions();
   } catch (error) {
+    console.log("Lỗi chi tiết:", error); // Thêm log để debug
     showError("Lỗi khi cập nhật giao dịch: " + error.message, 'tab4');
   } finally {
     showLoading(false, 'tab4');
@@ -1386,16 +1383,19 @@ async function deleteTransaction(transactionId) {
   if (!confirm("Bạn có chắc chắn muốn xóa giao dịch này?")) return;
   showLoading(true, 'tab4');
   try {
+    console.log("ID giao dịch được gửi:", transactionId); // Thêm log để debug
     const response = await fetch(`${apiUrl}?action=deleteTransaction&sheetId=${sheetId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: transactionId })
     });
     const result = await response.json();
+    console.log("Phản hồi từ server:", result); // Thêm log để debug
     if (result.error) throw new Error(result.error);
     showSuccess("Xóa giao dịch thành công!", 'tab4');
     window.fetchTransactions();
   } catch (error) {
+    console.log("Lỗi chi tiết:", error); // Thêm log để debug
     showError("Lỗi khi xóa giao dịch: " + error.message, 'tab4');
   } finally {
     showLoading(false, 'tab4');
