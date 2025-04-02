@@ -439,7 +439,7 @@ canvas#monthlyChart {
   <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
   <div id="errorMessageTab1" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
   <div id="successMessageTab1" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
-  <div id="loadingTab1" style="display: none; text-align: center; margin: 1rem 0;"> <!-- Đổi từ id="loading" thành id="loadingTab1" -->
+  <div id="loadingTab1" style="display: none; text-align: center; margin: 1rem 0;">
     <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
   </div>
   <div class="input-group">
@@ -643,7 +643,7 @@ function showModalError(modalId, message) {
 
 function showLoading(show, tabId) {
   let loadingElement;
-  if (tabId === 'tab1') loadingElement = document.getElementById('loading');
+  if (tabId === 'tab1') loadingElement = document.getElementById('loadingTab1');
   else if (tabId === 'tab2') loadingElement = document.getElementById('loadingTab2');
   else if (tabId === 'tab4') loadingElement = document.getElementById('loadingTab4');
   if (loadingElement) loadingElement.style.display = show ? 'block' : 'none';
