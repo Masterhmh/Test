@@ -521,19 +521,18 @@ canvas#monthlyChart {
     </div>
   </div>
     <div id="tab4" class="tab-content active">
-    <h1>GIAO DỊCH TRONG NGÀY</h1>
-    <p class="notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
-    <div id="errorMessageTab4" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="successMessageTab4" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
-    <div id="loadingTab4" style="display: none; text-align: center; margin: 1rem 0;">
-      <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
-    </div>
-    <div class="input-group">
-      Ngày: <input type="date" id="transactionDate">
-      <input type="text" id="searchQuery" placeholder="Tìm kiếm giao dịch">
-      <button id="fetchTransactionsBtn">Lọc</button>
-      <button id="addTransactionBtn">Thêm</button>
-    </div>
+  <h1>GIAO DỊCH TRONG NGÀY</h1>
+  <p class="notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
+  <div id="errorMessageTab4" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <div id="successMessageTab4" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+  <div id="loadingTab4" style="display: none; text-align: center; margin: 1rem 0;">
+    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+  </div>
+  <div class="input-group">
+    Ngày: <input type="date" id="transactionDate">
+    <button id="fetchTransactionsBtn">Lọc</button>
+    <button id="addTransactionBtn">Thêm</button>
+  </div>
     <div class="stats-container" id="dailySummary">
       <div class="stat-box income"><div class="title">Tổng thu nhập</div><div class="amount">0đ</div></div>
       <div class="stat-box expense"><div class="title">Tổng chi tiêu</div><div class="amount">0đ</div></div>
@@ -686,7 +685,7 @@ window.fetchData = async function() {
     return;
   }
 
-  showLoading(true, 'tab1');
+  showLoading(true, 'tab1'); // Hiển thị loading
   try {
     const financialResponse = await fetch(`${apiUrl}?action=getFinancialSummary&startDate=${startDateInput}&endDate=${endDateInput}&sheetId=${sheetId}`);
     const financialData = await financialResponse.json();
@@ -703,7 +702,7 @@ window.fetchData = async function() {
     showError("Lỗi khi lấy dữ liệu: " + error.message, 'tab1');
     updateFinancialData({ error: true });
   } finally {
-    showLoading(false, 'tab1');
+    showLoading(false, 'tab1'); // Ẩn loading
   }
 };
 
@@ -818,41 +817,66 @@ window.fetchMonthlyData = async function() {
 function updateMonthlyChart(filteredData) {
   const ctx = document.getElementById('monthlyChart').getContext('2d');
   if (window.monthlyChart) window.monthlyChart.destroy();
+
   if (!filteredData || filteredData.length === 0) {
     window.monthlyChart = new Chart(ctx, {
       type: 'bar',
-      data: { labels: ['Không có dữ liệu'], datasets: [{ label: 'Thu nhập', data: [0], backgroundColor: '#10B981' }, { label: 'Chi tiêu', data: [0], backgroundColor: '#EF4444' }] },
-      options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: true }, datalabels: { display: false } } }
+      data: {
+        labels: ['Không có dữ liệu'],
+        datasets: [
+          { label: 'Thu nhập', data: [0], backgroundColor: '#10B981' },
+          { label: 'Chi tiêu', data: [0], backgroundColor: '#EF4444' }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } },
+        plugins: { legend: { display: true }, datalabels: { display: false } }
+      }
     });
     document.getElementById('monthlyLegend').innerHTML = '<div>Không có dữ liệu</div>';
     return;
   }
+
   const labels = filteredData.map(item => `Tháng ${item.month}`);
-  const incomes = filteredData.map(item => item.income);
-  const expenses = filteredData.map(item => item.expense);
+  const incomes = filteredData.map(item => item.income || 0); // Đảm bảo có giá trị mặc định
+  const expenses = filteredData.map(item => item.expense || 0); // Đảm bảo có giá trị mặc định
   window.monthlyChart = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Thu nhập', data: incomes, backgroundColor: '#10B981' }, { label: 'Chi tiêu', data: expenses, backgroundColor: '#EF4444' }] },
+    data: {
+      labels,
+      datasets: [
+        { label: 'Thu nhập', data: incomes, backgroundColor: '#10B981' },
+        { label: 'Chi tiêu', data: expenses, backgroundColor: '#EF4444' }
+      ]
+    },
     options: {
       responsive: true,
-      scales: { y: { beginAtZero: true, ticks: { callback: value => value.toLocaleString('vi-VN') + 'đ' } }, x: { ticks: { maxRotation: 45, minRotation: 45 } } },
-      plugins: { tooltip: { callbacks: { label: tooltipItem => `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ` } }, datalabels: { formatter: value => value.toLocaleString('vi-VN') + 'đ', color: '#1F2A44' } }
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: value => value.toLocaleString('vi-VN') + 'đ' } },
+        x: { ticks: { maxRotation: 45, minRotation: 45 } }
+      },
+      plugins: {
+        tooltip: { callbacks: { label: tooltipItem => `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ` } },
+        datalabels: { formatter: value => value.toLocaleString('vi-VN') + 'đ', color: '#1F2A44' }
+      }
     }
   });
+
   const monthlyLegend = document.getElementById('monthlyLegend');
   monthlyLegend.innerHTML = '';
   const column = document.createElement('div');
   column.className = 'monthly-column';
   filteredData.forEach(item => {
-    const difference = item.income - item.expense;
+    const difference = (item.income || 0) - (item.expense || 0);
     const diffClass = difference >= 0 ? 'positive' : 'negative';
     const diffIcon = difference >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
     const monthItem = document.createElement('div');
     monthItem.className = 'month-item';
     monthItem.innerHTML = `
       <h3>Tháng ${item.month}:</h3>
-      <p><span class="color-box" style="background-color: #10B981;"></span>Tổng thu nhập: <strong>${item.income.toLocaleString('vi-VN')}đ</strong></p>
-      <p><span class="color-box" style="background-color: #EF4444;"></span>Tổng chi tiêu: <strong>${item.expense.toLocaleString('vi-VN')}đ</strong></p>
+      <p><span class="color-box" style="background-color: #10B981;"></span>Tổng thu nhập: <strong>${(item.income || 0).toLocaleString('vi-VN')}đ</strong></p>
+      <p><span class="color-box" style="background-color: #EF4444;"></span>Tổng chi tiêu: <strong>${(item.expense || 0).toLocaleString('vi-VN')}đ</strong></p>
       <p><i class="fas ${diffIcon} difference-icon ${diffClass}"></i>Chênh lệch: <span class="difference ${diffClass}"><strong>${difference.toLocaleString('vi-VN')}đ</strong></span></p>
     `;
     column.appendChild(monthItem);
@@ -868,7 +892,6 @@ const transactionsPerPage = 10;
 
 window.fetchTransactions = async function() {
   const transactionDate = document.getElementById('transactionDate').value;
-  const searchQuery = document.getElementById('searchQuery').value.toLowerCase();
   if (!transactionDate) {
     showError("Vui lòng chọn ngày để xem giao dịch!", 'tab4');
     return;
@@ -876,7 +899,7 @@ window.fetchTransactions = async function() {
   const dateForApi = transactionDate;
   const [year, month, day] = transactionDate.split('-');
   const formattedDateForDisplay = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
-  const cacheKey = `${formattedDateForDisplay}-${searchQuery}`;
+  const cacheKey = `${formattedDateForDisplay}`; // Xóa searchQuery khỏi cacheKey
 
   if (cachedTransactions && cachedTransactions.cacheKey === cacheKey) {
     displayTransactions(cachedTransactions.data);
@@ -888,13 +911,8 @@ window.fetchTransactions = async function() {
     const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${encodeURIComponent(dateForApi)}&sheetId=${sheetId}`);
     const transactionData = await response.json();
     if (transactionData.error) throw new Error(transactionData.error);
-    const filteredData = searchQuery ? transactionData.filter(item => 
-      item.content.toLowerCase().includes(searchQuery) || 
-      item.category.toLowerCase().includes(searchQuery) || 
-      item.amount.toString().includes(searchQuery)
-    ) : transactionData;
-    cachedTransactions = { cacheKey, data: filteredData };
-    displayTransactions(filteredData);
+    cachedTransactions = { cacheKey, data: transactionData }; // Không lọc searchQuery nữa
+    displayTransactions(transactionData);
   } catch (error) {
     showError("Lỗi khi lấy dữ liệu giao dịch: " + error.message, 'tab4');
     displayTransactions({ error: true });
@@ -902,6 +920,46 @@ window.fetchTransactions = async function() {
     showLoading(false, 'tab4');
   }
 };
+
+// Trong phần khởi tạo, xóa sự kiện input của searchQuery
+document.addEventListener('DOMContentLoaded', function() {
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    item.addEventListener('click', function() {
+      window.openTab(this.getAttribute('data-tab'));
+    });
+  });
+
+  document.getElementById('fetchDataBtn').addEventListener('click', window.fetchData);
+  document.getElementById('fetchMonthlyDataBtn').addEventListener('click', window.fetchMonthlyData);
+  document.getElementById('fetchTransactionsBtn').addEventListener('click', window.fetchTransactions);
+  document.getElementById('addTransactionBtn').addEventListener('click', openAddForm);
+
+  document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      window.fetchTransactions();
+    }
+  });
+  document.getElementById('nextPage').addEventListener('click', () => {
+    const totalPages = Math.ceil((cachedTransactions?.data.length || 0) / transactionsPerPage);
+    if (currentPage < totalPages) {
+      currentPage++;
+      window.fetchTransactions();
+    }
+  });
+
+  const today = new Date();
+  const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+  const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  document.getElementById('startDate').value = formatDateToYYYYMMDD(startDate);
+  document.getElementById('endDate').value = formatDateToYYYYMMDD(today);
+  document.getElementById('startMonth').value = 1;
+  document.getElementById('endMonth').value = 12;
+  document.getElementById('transactionDate').value = formatDateToYYYYMMDD(today);
+
+  window.openTab('tab4');
+});
 
 // Hiển thị giao dịch với phân trang
 function displayTransactions(data) {
