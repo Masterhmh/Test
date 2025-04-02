@@ -1014,6 +1014,9 @@ canvas#monthlyChart {
     <h2>Chỉnh sửa giao dịch</h2>
     <form id="editForm">
       <input type="hidden" id="editTransactionId">
+      <label for="editDate">Ngày (dd/MM):</label>
+      <input type="text" id="editDate" required pattern="\d{1,2}/\d{1,2}" placeholder="dd/MM">
+      
       <label for="editContent">Nội dung:</label>
       <input type="text" id="editContent" required>
       
@@ -1614,13 +1617,19 @@ function displayTransactions(data) {
   });
 
   document.querySelectorAll('.edit-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const transactionId = this.getAttribute('data-id');
-      const transaction = limitedData.find(item => item.id == transactionId);
-      openEditForm(transaction);
-    });
+  button.addEventListener('click', function() {
+    const transactionId = this.getAttribute('data-id');
+    console.log('Transaction ID:', transactionId);
+    const transaction = limitedData.find(item => item.id === transactionId);
+    console.log('Transaction found:', transaction);
+    if (!transaction) {
+      console.error(`Không tìm thấy giao dịch với ID: ${transactionId}`);
+      showError('Không tìm thấy giao dịch để chỉnh sửa!');
+      return;
+    }
+    openEditForm(transaction);
   });
-}
+});
 
 // ✅ Lấy khoảng thời gian tháng hiện tại
 function getCurrentMonthRange() {
@@ -1660,15 +1669,22 @@ async function fetchCategories() {
 
 // ✅ Mở form chỉnh sửa giao dịch
 async function openEditForm(transaction) {
+  if (!transaction) {
+    console.error('Transaction không hợp lệ:', transaction);
+    showError('Dữ liệu giao dịch không hợp lệ!');
+    return;
+  }
+
   const modal = document.getElementById('editModal');
+  console.log('Modal element:', modal);
   const form = document.getElementById('editForm');
   const categorySelect = document.getElementById('editCategory');
 
-  document.getElementById('editTransactionId').value = transaction.id;
-  document.getElementById('editContent').value = transaction.content;
-  document.getElementById('editAmount').value = transaction.amount;
-  document.getElementById('editType').value = transaction.type;
-  document.getElementById('editDate').value = transaction.date.split('/').slice(0, 2).join('/'); // Hiển thị "dd/MM"
+  document.getElementById('editTransactionId').value = transaction.id || '';
+  document.getElementById('editContent').value = transaction.content || '';
+  document.getElementById('editAmount').value = transaction.amount || 0;
+  document.getElementById('editType').value = transaction.type || 'Thu nhập';
+  document.getElementById('editDate').value = transaction.date ? transaction.date.split('/').slice(0, 2).join('/') : '';
   document.getElementById('editNote').value = transaction.note || '';
 
   const categories = await fetchCategories();
@@ -1684,7 +1700,7 @@ async function openEditForm(transaction) {
   });
 
   modal.style.display = 'flex';
-
+  console.log('Modal display set to flex');
   form.onsubmit = async function(e) {
     e.preventDefault();
     const dateInput = document.getElementById('editDate').value;
@@ -1705,7 +1721,6 @@ async function openEditForm(transaction) {
     await saveTransaction(updatedTransaction);
   };
 }
-
 // ✅ Đóng form chỉnh sửa giao dịch
 function closeEditForm() {
   const modal = document.getElementById('editModal');
