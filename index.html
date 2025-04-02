@@ -1507,6 +1507,7 @@ window.fetchTransactions = async function() {
     return;
   }
 
+  // Chuyển định dạng từ YYYY-MM-DD sang DD/MM/YYYY một cách chính xác
   const [year, month, day] = transactionDate.split('-');
   const formattedDate = `${day}/${month}/${year}`;
   const cacheKey = formattedDate;
@@ -1534,10 +1535,15 @@ window.fetchTransactions = async function() {
     showLoading(false);
   }
 };
-
 // ✅ Định dạng ngày thành DD/MM/YYYY với số 0 ở trước
 function formatDate(dateStr) {
-  const [day, month, year] = dateStr.split('/');
+  // Kiểm tra nếu dateStr có định dạng DD/MM/YYYY
+  const parts = dateStr.split('/');
+  if (parts.length !== 3) {
+    console.error("Invalid date format: ", dateStr);
+    return dateStr; // Trả về nguyên bản nếu không đúng định dạng
+  }
+  const [day, month, year] = parts;
   const formattedDay = day.padStart(2, '0');
   const formattedMonth = month.padStart(2, '0');
   return `${formattedDay}/${formattedMonth}/${year}`;
