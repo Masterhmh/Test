@@ -1454,7 +1454,13 @@ window.fetchTransactions = async function() {
     displayTransactions({ error: true });
   }
 };
-
+// ✅ Định dạng ngày thành DD/MM/YYYY với số 0 ở trước
+function formatDate(dateStr) {
+  const [day, month, year] = dateStr.split('/');
+  const formattedDay = day.padStart(2, '0');
+  const formattedMonth = month.padStart(2, '0');
+  return `${formattedDay}/${formattedMonth}/${year}`;
+}
 // ✅ Hiển thị giao dịch (Tab 4)
 function displayTransactions(data) {
   console.log("Dữ liệu nhận được: ", data);
@@ -1514,7 +1520,7 @@ function displayTransactions(data) {
     transactionBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; width: 100%;">
         <div style="flex: 1;">
-          <div class="date">${item.date}</div>
+          <div class="date">${formatDate(item.date)}</div>
           <div class="amount" style="color: ${amountColor}">${item.amount.toLocaleString('vi-VN')}đ</div>
           <div class="content">Nội dung: ${item.content}${item.note ? ` (${item.note})` : ''}</div>
         </div>
@@ -1536,7 +1542,6 @@ function displayTransactions(data) {
     });
   });
 }
-
 // ✅ Lấy khoảng thời gian tháng hiện tại
 function getCurrentMonthRange() {
   const now = new Date();
