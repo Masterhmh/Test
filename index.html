@@ -1165,13 +1165,19 @@ function displayTransactions(data) {
   nextPageBtn.disabled = currentPage === totalPages;
 
   document.querySelectorAll('.edit-btn').forEach(button => {
-    button.addEventListener('click', () => openEditForm(data.find(item => item.id === button.getAttribute('data-id'))));
+    const transactionId = button.getAttribute('data-id');
+    const transaction = data.find(item => String(item.id) === String(transactionId)); // Đảm bảo so sánh kiểu string
+    if (!transaction) {
+      console.error(`Không tìm thấy giao dịch với ID: ${transactionId}`);
+      return;
+    }
+    button.addEventListener('click', () => openEditForm(transaction));
   });
+
   document.querySelectorAll('.delete-btn').forEach(button => {
     button.addEventListener('click', () => deleteTransaction(button.getAttribute('data-id')));
   });
 }
-
 // Định dạng ngày
 function formatDate(dateStr) {
   const parts = dateStr.split('/');
@@ -1370,10 +1376,17 @@ async function deleteTransaction(transactionId) {
   if (!confirm("Bạn có chắc chắn muốn xóa giao dịch này?")) return;
   showLoading(true, 'tab4');
   try {
-    const response = await fetch(apiUrl, {  // Chỉ dùng apiUrl, không thêm query string
+    const transaction = cachedTransactions.data.find(item => String(item.id) === String(transactionId));
+    if (!transaction) throw new Error("Không tìm thấy giao dịch để xóa!");
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'deleteTransaction', id: transactionId, sheetId: sheetId })
+      body: JSON.stringify({ 
+        action: 'deleteTransaction', 
+        id: transactionId, 
+        sheetId: sheetId, 
+        date: transaction.date // Gửi thêm ngày giao dịch
+      })
     });
     const result = await response.json();
     if (result.error) throw new Error(result.error);
