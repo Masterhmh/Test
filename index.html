@@ -606,7 +606,7 @@ canvas#monthlyChart {
 <script>
 // Lấy thông số API và Sheet ID từ URL
 const urlParams = new URLSearchParams(window.location.search);
-const apiUrl = 'https://proxy-server.masterhmh.workers.dev/';
+const apiUrl = urlParams.get('api');
 const sheetId = urlParams.get('sheetId');
 
 if (!apiUrl || !sheetId) {
