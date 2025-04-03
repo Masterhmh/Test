@@ -1327,7 +1327,7 @@ function closeAddForm() { document.getElementById('addModal').style.display = 'n
 async function saveTransaction(updatedTransaction) {
   showLoading(true, 'tab4');
   try {
-    const response = await fetch(`${apiUrl}?action=updateTransaction&sheetId=${sheetId}`, {
+    const response = await fetch(apiUrl, {  // Chỉ dùng apiUrl, không thêm query string
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedTransaction)
@@ -1348,7 +1348,7 @@ async function saveTransaction(updatedTransaction) {
 async function addTransaction(newTransaction) {
   showLoading(true, 'tab4');
   try {
-    const response = await fetch(`${apiUrl}?action=addTransaction&sheetId=${sheetId}`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newTransaction)
@@ -1370,8 +1370,10 @@ async function deleteTransaction(transactionId) {
   if (!confirm("Bạn có chắc chắn muốn xóa giao dịch này?")) return;
   showLoading(true, 'tab4');
   try {
-    const response = await fetch(`${apiUrl}?action=deleteTransaction&sheetId=${sheetId}&id=${transactionId}`, {
-      method: 'POST'
+    const response = await fetch(apiUrl, {  // Chỉ dùng apiUrl, không thêm query string
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'deleteTransaction', id: transactionId, sheetId: sheetId })
     });
     const result = await response.json();
     if (result.error) throw new Error(result.error);
