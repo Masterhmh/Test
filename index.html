@@ -7,856 +7,772 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Nhóm: Các biến toàn cục */
-    :root {
-      --primary-color: #16A34A;
-      --secondary-color: #6B7280;
-      --background-color: #F7F9FC;
-      --card-bg: #FFFFFF;
-      --text-color: #1F2A44;
-      --gradient-start: #16A34A;
-      --gradient-end: #4ADE80;  
-      --accent-color: #16A34A; 
-    }
-
-    /* Nhóm: Cấu hình chung cho trang */
-    html { 
-      font-size: 16px; 
-      overflow-x: hidden;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 80px 20px 20px;
-      background-color: var(--background-color);
-      box-sizing: border-box;
-      width: 100%;
-      min-width: 320px;
-      overflow-x: hidden;
-      height: 100vh;
-      font-size: 1rem;
-      color: var(--text-color);
-    }
-
-    .content-wrapper { 
-      max-width: 700px; 
-      width: 100%; 
-      margin: 0 auto; 
-      overflow-x: hidden;
-    }
-
-    .tab-content { 
-      display: none; 
-      width: 100%; 
-    }
-
-    .tab-content.active { 
-      display: block; 
-    }
-
-    /* Nhóm: Thanh điều hướng trên cùng */
-    .top-nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      display: flex;
-      justify-content: space-around;
-      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-      padding: 15px 0;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-      height: 60px;
-      width: 100%;
-      max-width: 100%;
-      margin: 0;
-      overflow-x: hidden;
-    }
-
-    .nav-item {
-      flex: 1;
-      text-align: center;
-      cursor: pointer;
-      padding: 5px;
-      color: #fff;
-      transition: opacity 0.3s, background-color 0.3s;
-      font-size: 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .nav-item:hover { opacity: 0.8; }
-    .nav-item i { font-size: 1.5rem; margin-bottom: 5px; }
-    .nav-item span { display: block; font-size: 0.9rem; }
-    .nav-item.active {
-      font-weight: 600;
-      color: #FFFFFF;
-      position: relative;
-      border-bottom: none;
-    }
-    .nav-item.active::after {
-      content: '';
-      position: absolute;
-      bottom: -2px; left: 50%; transform: translateX(-50%);
-      width: 70px; height: 2px;
-      background-color: #FFFFFF;
-    }
-
-    /* Nhóm: Các thành phần giao diện chung */
-    h1 { 
-      font-size: 2rem; 
-      margin-bottom: 2rem; 
-      text-align: center; 
-      font-weight: 700; 
-    }
-
-    .input-group {
-      margin-bottom: 1.5rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      width: 100%;
-      padding: 0 15px;
-      flex-wrap: nowrap;
-    }
-
-    select, input[type="date"] {
-      padding: 0.6rem;
-      font-size: 1rem;
-      width: 140px;
-      border-radius: 12px;
-      border: 1px solid #E5E7EB;
-      background-color: var(--card-bg);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      transition: border-color 0.3s;
-    }
-
-    select:focus, input[type="date"]:focus {
-      outline: none;
-      border-color: var(--primary-color);
-    }
-
-    button {
-      padding: 0.6rem 1.5rem;
-      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s;
-    }
-
-    button:hover { 
-      transform: translateY(-2px); 
-    }
-
-    .notification {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-size: 0.8rem;
-      color: var(--secondary-color);
-    }
-
-    /* Nhóm: Thành phần dùng chung cho Tab 1, Tab 4 */
-    .stats-container {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-
-    .stats-container > div { 
-      text-align: center; 
-    }
-
-    .stat-box {
-      padding: 0.8rem;
-      width: 110px;
-      max-width: 110px;
-      border-radius: 16px;
-      font-size: 0.85rem;
-      min-height: 70px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #F8FAFC, #E5E7EB);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s;
-      text-align: center;
-    }
-
-    .stat-box:hover { 
-      transform: translateY(-5px); 
-    }
-
-    .stat-box .title {
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-      color: var(--text-color);
-      font-size: 0.9rem;
-      white-space: normal;
-      line-height: 1.2;
-    }
-
-    .stat-box .amount {
-      font-weight: 700;
-      font-size: 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-
-    .stat-box .amount.no-data {
-      font-size: 0.8rem;
-      white-space: normal;
-      word-wrap: break-word;
-      line-height: 1.2;
-    }
-
-    .income .amount { color: #10B981; }
-    .expense .amount { color: #EF4444; }
-    .balance .amount { color: var(--primary-color); }
-
-    /* Nhóm: Tab 1 - Thống kê */
-    .chart-container {
-      margin-top: 0;
-      width: 100%;
-      max-width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2rem;
-      text-align: center;
-    }
-
-    .chart-container h1 { 
-      width: 100%; 
-      text-align: center; 
-      margin: 0 auto; 
-    }
-
-    canvas#myChart {
-      width: 100% !important;
-      height: auto !important;
-      max-width: 500px !important;
-      aspect-ratio: 1 / 1;
-      display: block;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .custom-legend {
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 1rem;
-      padding: 0;
-      margin: 2rem auto 0;
-      gap: 0.3rem;
-    }
-
-    .custom-legend-column {
-      width: 48%;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 280px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 0.8rem;
-    }
-
-    .legend-color {
-      width: 16px; height: 16px;
-      margin-right: 0.75rem;
-      display: inline-block;
-      flex-shrink: 0;
-      border-radius: 4px;
-      margin-top: 2px;
-    }
-
-    .legend-text { 
-      font-size: 1rem; 
-      display: flex;
-      flex-direction: column;
-    }
-
-    .legend-value { 
-      font-weight: 700; 
-      margin-top: 0.2rem;
-    }
-
-    /* Nhóm: Tab 2 - Biểu đồ */
-    canvas#monthlyChart {
-      width: 100% !important;
-      height: auto !important;
-      max-width: 500px !important;
-      min-height: 350px; 
-      max-height: 450px;
-      display: block;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .monthly-legend {
-      width: 100%;
-      max-width: 500px;
-      display: flex;
-      flex-direction: column;
-      font-size: 1rem;
-      padding: 0 20px;
-      margin: 2rem auto 0;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    .monthly-column {
-      width: 100%;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      text-align: left;
-      min-width: 0;
-    }
-
-    .month-item { 
-      text-align: left; 
-      white-space: nowrap;
-    }
-
-    .month-item h3 { 
-      font-size: 1.2rem; 
-      margin-bottom: 0.5rem; 
-      font-weight: 500; 
-      white-space: nowrap; 
-    }
-
-    .month-item p {
-      margin: 0.5rem 0;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-    }
-
-    .month-item .color-box {
-      width: 16px; height: 16px;
-      margin-right: 0.75rem;
-      display: inline-block;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-
-    .month-item .amount { 
-      font-weight: 700; 
-      margin-left: 0.5rem; 
-    }
-
-    .month-item .difference { 
-      font-weight: 700; 
-      margin-left: 0.5rem; 
-    }
-
-    .month-item .difference-icon { 
-      margin-right: 0.5rem; 
-      font-size: 0.8rem; 
-    }
-
-    .difference.positive { color: #10B981; }
-    .difference.negative { color: #EF4444; }
-    .difference-icon.positive { color: #10B981; }
-    .difference-icon.negative { color: #EF4444; }
-
-    /* Nhóm: Tab 3 - Giới thiệu */
-    .info-section {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .info-card h1 {
-      text-align: left;
-    }
-
-    .info-card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .info-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .info-card h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: var(--text-color);
-      border-left: 4px solid var(--primary-color);
-      padding-left: 0.75rem;
-    }
-
-    .info-card p {
-      margin: 0.75rem 0;
-      font-size: 1rem;
-      line-height: 1.6;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-color);
-    }
-
-    .info-card p strong {
-      font-weight: 500;
-      color: var(--text-color);
-    }
-
-    .info-card a {
-      color: var(--primary-color);
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .info-card a:hover {
-      color: var(--accent-color);
-      text-decoration: underline;
-    }
-
-    .custom-text {
-      text-align: justify;
-      font-style: italic;
-      font-size: 1rem;
-      color: var(--secondary-color);
-      line-height: 1.6;
-    }
-
-    .qr-container {
-      text-align: center;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .qr-frame {
-      display: inline-block;
-      padding: 1rem;
-      background: var(--card-bg);
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .qr-frame:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .qr-image {
-      max-width: 100%;
-      width: 400px;
-      height: auto;
-      border-radius: 12px;
-    }
-
-    .qr-caption {
-      margin-top: 0.5rem;
-      font-size: 1rem;
-      color: var(--secondary-color);
-      font-style: italic;
-    }
-
-    .cta-button {
-      display: inline-block;
-      margin-top: 0;
-      padding: 0.75rem 1.5rem;
-      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-      color: white;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: transform 0.3s ease, background 0.3s ease;
-    }
-
-    .cta-button:hover {
-      transform: translateY(-3px);
-      background: linear-gradient(135deg, var(--gradient-end), var(--gradient-start));
-    }
-
-    .contact-columns {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      width: 100%;
-    }
-
-    .highlight-color {
-      color: var(--primary-color);
-    }
-
-    /* Nhóm: Tab 4 - Giao dịch */
-    .transactions-list {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      width: 100%;
-      margin-bottom: 2rem;
-    }
-
-    .transaction-box {
-      padding: 1rem;
-      width: 100%;
-      max-width: 600px;
-      border-radius: 16px;
-      font-size: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      background: linear-gradient(135deg, #F8FAFC, #E5E7EB);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s;
-      margin-bottom: 1rem;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .transaction-box:hover { 
-      transform: translateY(-5px); 
-    }
-
-    .transaction-box .date {
-      font-weight: 500;
-      font-size: 1.1rem;
-      color: var(--text-color);
-      margin-bottom: 0.5rem;
-    }
-
-    .transaction-box .amount {
-      font-weight: 700;
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .transaction-box .type {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      font-weight: 700;
-    }
-
-    .transaction-box .category {
-      font-size: 1rem;
-      font-style: italic;
-      color: var(--secondary-color);
-    }
-
-    .transaction-box .type.expense { color: #EF4444; }
-    .transaction-box .type.income { color: #10B981; }
-    .transaction-box .content {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      white-space: normal;
-      word-wrap: break-word;
-    }
-
-    .transaction-box .amount {
-      font-size: 1rem;
-    }
-
-    /* Nút phân trang */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .pagination button {
-      padding: 0.6rem 1rem;
-      width: 100px;
-      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 0.9rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s, opacity 0.2s;
-    }
-
-    .pagination button:hover:not(:disabled) {
-      transform: translateY(-2px);
-    }
-
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-
-    /* Nhóm: Media Queries - Responsive Design */
-    @media (max-width: 600px) {
-      body { 
-        padding: 60px 5px 10px; 
-        font-size: 0.9rem; 
-      }
-      h1 { font-size: 1.5rem; margin-bottom: 1rem; }
-      .top-nav { height: 50px; padding: 10px 0; }
-      .nav-item i { font-size: 1.2rem; }
-      .nav-item span { font-size: 0.75rem; }
-      .input-group { gap: 0.5rem; padding: 0 5px; }
-      select, input[type="date"] { width: 110px; font-size: 0.85rem; padding: 0.6rem; }
-      button { padding: 0.6rem 1rem; font-size: 0.85rem; }
-      .stats-container { 
-        gap: 0.5rem; 
-        justify-content: center;
-      }
-      .stat-box { 
-        width: 100px; 
-        max-width: 100px; 
-        padding: 0.8rem; 
-        min-height: 70px; 
-        font-size: 0.8rem; 
-      }
-      .stat-box .title { font-size: 0.8rem; margin-bottom: 0.5rem; }
-      .stat-box .amount { font-size: 1rem; }
-      .chart-container {
-        padding: 0 5px;
-      }
-      canvas#myChart { max-width: 320px !important; }
-      canvas#monthlyChart { 
-        max-width: 300px !important;
-        width: 100% !important;
-        min-height: 250px;
-        max-height: 350px;
-        padding: 5px;
-      }
-      .custom-legend { 
-        flex-direction: column; 
-        max-width: 320px; 
-        font-size: 0.85rem; 
-        gap: 0.4rem; 
-      }
-      .custom-legend-column { 
-        width: 100%; 
-        min-width: 0; 
-      }
-      .legend-text { font-size: 0.85rem; }
-      .monthly-legend { 
-        max-width: 300px;
-        padding: 0 10px; 
-        font-size: 0.85rem; 
-        gap: 0.4rem; 
-      }
-      .monthly-column { 
-        max-width: 280px;
-        gap: 1rem; 
-      }
-      .month-item h3 { font-size: 0.95rem; }
-      .month-item p { font-size: 0.85rem; }
-      .info-section { padding: 0 10px; gap: 0.4rem; max-width: 400px; }
-      .info-card { padding: 0.8rem; }
-      .info-card h1 { font-size: 1.2rem; margin-bottom: 0.8rem; }
-      .info-card p, .custom-text { font-size: 0.85rem; line-height: 1.4; }
-      .qr-image { width: 250px; }
-      .qr-caption { font-size: 0.8rem; }
-      .cta-button { padding: 0.5rem 1rem; font-size: 0.85rem; }
-      .transaction-box { padding: 0.8rem; max-width: 320px; margin-bottom: 0.8rem; }
-      .transaction-box .date { font-size: 0.95rem; }
-      .transaction-box .amount { font-size: 1.2rem; }
-      .transaction-box .type { font-size: 0.9rem; }
-      .transaction-box .category { font-size: 0.85rem; }
-      .transaction-box .content { font-size: 0.85rem; }
-      .pagination button { width: 90px; font-size: 0.8rem; }
-    }
-
-    @media (min-width: 601px) and (max-width: 1023px) {
-      body { padding: 70px 20px 20px; }
-      h1 { font-size: 1.8rem; }
-      .stats-container { 
-        gap: 1.5rem; 
-        justify-content: center;
-      }
-      .stat-box { width: 130px; padding: 1rem; max-width: 130px; }
-      .stat-box .title { font-size: 0.95rem; }
-      .stat-box .amount { font-size: 1.2rem; }
-      canvas#myChart { max-width: 450px !important; }
-      canvas#monthlyChart { 
-        max-width: 450px !important;
-        width: 100% !important;
-        min-height: 300px; 
-        max-height: 400px;
-      }
-      .custom-legend { max-width: 550px; font-size: 0.95rem; gap: 0.3rem; }
-      .custom-legend-column { width: 48%; min-width: 260px; }
-      .legend-text { font-size: 0.95rem; }
-      .monthly-legend { 
-        max-width: 450px;
-        font-size: 0.95rem; 
-        gap: 0.5rem;
-      }
-      .monthly-column { 
-        max-width: 400px; 
-      }
-      .month-item h3 { font-size: 1.1rem; }
-      .month-item p { font-size: 0.95rem; }
-      select, input[type="date"] { width: 150px; font-size: 0.95rem; }
-      button { padding: 0.8rem 1.5rem; font-size: 0.95rem; }
-      .top-nav { height: 55px; }
-      .nav-item i { font-size: 1.4rem; }
-      .nav-item span { font-size: 0.9rem; }
-      .info-card h1 { font-size: 1.4rem; }
-      .info-card p, .custom-text { font-size: 0.95rem; }
-      .qr-image { width: 350px; }
-      .qr-caption { margin-top: 0.5rem; }
-      .cta-button { padding: 0.7rem 1.3rem; font-size: 0.95rem; margin-top: 0; }
-    }
-
-    @media (min-width: 1024px) {
-      .content-wrapper { max-width: 800px; }
-      body { padding: 80px 30px 30px; }
-      h1 { font-size: 2rem; }
-      .stats-container { 
-        gap: 2rem; 
-        justify-content: center;
-      }
-      .stat-box { width: 140px; padding: 1rem; max-width: 140px; }
-      .stat-box .title { font-size: 1rem; }
-      .stat-box .amount { font-size: 1.3rem; }
-      canvas#myChart { max-width: 500px !important; }
-      canvas#monthlyChart { 
-        max-width: 500px !important;
-        width: 100% !important;
-        min-height: 350px; 
-        max-height: 450px; 
-      }
-      .custom-legend { max-width: 600px; font-size: 1rem; gap: 0.3rem; }
-      .custom-legend-column { width: 48%; min-width: 280px; }
-      .legend-text { font-size: 1rem; }
-      .monthly-legend { 
-        max-width: 500px;
-        font-size: 1rem; 
-        gap: 0.5rem;
-      }
-      .monthly-column { 
-        max-width: 450px; 
-      }
-      .month-item h3 { font-size: 1.2rem; }
-      .month-item p { font-size: 1rem; }
-      .info-card h1 { font-size: 1.5rem; }
-      .info-card p, .custom-text { font-size: 1rem; }
-      .qr-image { width: 400px; }
-      .qr-caption { margin-top: 0.5rem; }
-      .cta-button { padding: 0.75rem 1.5rem; font-size: 1rem; margin-top: 0; }
-    }
+/* Nhóm: Các biến toàn cục */
+:root {
+  --primary-color: #16A34A;
+  --secondary-color: #6B7280;
+  --background-color: #F7F9FC;
+  --card-bg: #FFFFFF;
+  --text-color: #1F2A44;
+  --gradient-start: #16A34A;
+  --gradient-end: #4ADE80;  
+  --accent-color: #16A34A; 
+}
+
+html { 
+  font-size: 16px; 
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 80px 20px 20px;
+  background-color: var(--background-color);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 320px;
+  overflow-x: hidden;
+  height: 100vh;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.content-wrapper { 
+  max-width: 700px; 
+  width: 100%; 
+  margin: 0 auto; 
+  overflow-x: hidden;
+}
+
+.tab-content { 
+  display: none; 
+  width: 100%; 
+}
+
+.tab-content.active { 
+  display: block; 
+}
+
+.top-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-around;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  padding: 15px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  height: 60px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.nav-item {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+  padding: 5px;
+  color: #fff;
+  transition: opacity 0.3s, background-color 0.3s;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-item:hover { opacity: 0.8; }
+.nav-item i { font-size: 1.5rem; margin-bottom: 5px; }
+.nav-item span { display: block; font-size: 0.9rem; }
+.nav-item.active {
+  font-weight: 600;
+  color: #FFFFFF;
+  position: relative;
+  border-bottom: none;
+}
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 50%; transform: translateX(-50%);
+  width: 70px; height: 2px;
+  background-color: #FFFFFF;
+}
+
+h1 { 
+  font-size: 2rem; 
+  margin-bottom: 2rem; 
+  text-align: center; 
+  font-weight: 700; 
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0 15px;
+  flex-wrap: nowrap;
+}
+
+select, input[type="date"], input[type="text"], input[type="number"] {
+  padding: 0.6rem;
+  font-size: 1rem;
+  width: 140px;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.3s;
+}
+
+select:focus, input[type="date"]:focus, input[type="text"]:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+button {
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+button:hover { 
+  transform: translateY(-2px); 
+}
+
+#pagination {
+  text-align: center;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* Khoảng cách giữa nút và text */
+}
+
+#prevPage, #nextPage {
+  min-width: 120px; /* Đảm bảo kích thước tối thiểu bằng nhau */
+  padding: 0.6rem 1.5rem; /* Đồng nhất padding */
+  background: linear-gradient(135deg, #16A34A, #4ADE80);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+#prevPage:hover, #nextPage:hover {
+  transform: translateY(-2px);
+}
+
+#prevPage:disabled, #nextPage:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Điều chỉnh cho màn hình nhỏ */
+@media (max-width: 600px) {
+  #prevPage, #nextPage {
+    min-width: 100px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+.notification {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: var(--secondary-color);
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.stat-box {
+  padding: 1rem;
+  width: 120px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  flex-grow: 0;
+  flex-shrink: 0;
+  max-width: 140px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F8FAFC, #E5E7EB);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.stat-box:hover { transform: translateY(-5px); }
+.stat-box .title { font-weight: 500; margin-bottom: 0.5rem; color: var(--text-color); font-size: 0.9rem; }
+.stat-box .amount { font-weight: 700; font-size: 1.2rem; }
+.stat-box .amount.no-data { font-size: 1rem; white-space: pre-line; text-align: center; line-height: 1.2; }
+.income .amount { color: #10B981; }
+.expense .amount { color: #EF4444; }
+.balance .amount { color: var(--primary-color); }
+
+.chart-container {
+  margin-top: 0;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  text-align: center;
+}
+
+canvas#myChart {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 500px !important;
+  aspect-ratio: 1 / 1;
+  display: block;
+  margin: 0 auto;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.custom-legend {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  padding: 0;
+  margin: 2rem auto 0;
+  gap: 0.3rem;
+}
+
+.custom-legend-column {
+  width: 48%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 280px;
+}
+
+.legend-item { display: flex; align-items: flex-start; margin-bottom: 0.8rem; }
+.legend-color { width: 16px; height: 16px; margin-right: 0.75rem; border-radius: 4px; margin-top: 2px; }
+.legend-text { font-size: 1rem; display: flex; flex-direction: column; }
+.legend-value { font-weight: 700; margin-top: 0.2rem; }
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.transaction-box {
+  padding: 1rem;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #F8FAFC, #E5E7EB);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+  margin-bottom: 1rem;
+}
+
+.transaction-box:hover { transform: translateY(-5px); }
+.transaction-box .date { font-weight: 500; font-size: 1.1rem; color: var(--text-color); margin-bottom: 0.5rem; }
+.transaction-box .amount { font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; }
+.transaction-box .type { font-size: 1rem; margin-bottom: 0.5rem; font-weight: 700; }
+.transaction-box .category { font-size: 1rem; font-style: italic; color: var(--secondary-color); }
+.transaction-box .type.expense { color: #EF4444; }
+.transaction-box .type.income { color: #10B981; }
+.transaction-box .content { font-size: 1rem; margin-bottom: 0.5rem; white-space: normal; word-wrap: break-word; }
+
+canvas#monthlyChart {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 500px !important;
+  min-height: 350px; 
+  max-height: 450px;
+  display: block;
+  margin: 0 auto;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.monthly-legend {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  padding: 0 20px;
+  margin: 2rem auto 0;
+  gap: 1rem;
+  align-items: center;
+}
+
+.monthly-column { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 1.5rem; text-align: left; }
+.month-item { text-align: left; white-space: nowrap; }
+.month-item h3 { font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 500; }
+.month-item p { margin: 0.5rem 0; font-size: 1rem; display: flex; align-items: center; }
+.month-item .color-box { width: 16px; height: 16px; margin-right: 0.75rem; border-radius: 4px; }
+.month-item .amount { font-weight: 700; margin-left: 0.5rem; }
+.month-item .difference { font-weight: 700; margin-left: 0.5rem; }
+.month-item .difference-icon { margin-right: 0.5rem; font-size: 0.8rem; }
+.difference.positive { color: #10B981; }
+.difference.negative { color: #EF4444; }
+.difference-icon.positive { color: #10B981; }
+.difference-icon.negative { color: #EF4444; }
+
+.info-section {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto; 
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-sizing: border-box; 
+  align-items: center; 
+}
+.info-card {
+  background: var(--card-bg);
+  border-radius: 12px; 
+  padding: 1rem; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /
+  transition: transform 0.3s ease;
+  width: 100%; 
+  max-width: 450px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+}
+
+.info-card h1 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  text-align: left; /* Căn trái nội dung */
+  color: var(--text-color);
+  border-left: 4px solid var(--primary-color);
+  padding-left: 0.5rem;
+}
+
+.info-card p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-card a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.info-card a:hover {
+  text-decoration: underline;
+}
+
+.custom-text {
+  text-align: justify; /* Căn đều hai bên */
+  text-align-last: left; /* Dòng cuối cùng sẽ lệch trái nếu không đủ nội dung */
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.qr-frame {
+  padding: 0.75rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.qr-image {
+  max-width: 100%;
+  width: 300px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.qr-caption {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  font-style: italic;
+}
+
+.cta-button {
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  color: white;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+}
+
+
+.contact-columns {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+
+
+.contact-columns p {
+  margin: 0.5;
+  line-height: 1.4;
+}
+
+.highlight-color {
+  color: var(--primary-color);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.modal-content label {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.modal-content textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modal-content .btn-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal-content .btn-group button {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.modal-content .btn-group .save-btn {
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  color: white;
+}
+
+.modal-content .btn-group .cancel-btn {
+  background-color: #EF4444;
+  color: white;
+}
+
+.modal-content .error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 60px 5px 10px;
+    font-size: 0.9rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .top-nav {
+    height: 50px;
+    padding: 10px 0;
+  }
+
+  .nav-item i {
+    font-size: 1.2rem;
+  }
+
+  .nav-item span {
+    font-size: 0.75rem;
+  }
+
+  .input-group {
+    gap: 0.5rem;
+    padding: 0 5px;
+  }
+
+  select,
+  input[type="date"] {
+    width: 110px;
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+
+  button {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .stats-container {
+    gap: 0.5rem;
+  }
+
+  .stat-box {
+    width: 100px;
+    max-width: 100px;
+    padding: 0.8rem;
+    min-height: 70px;
+    font-size: 0.8rem;
+  }
+
+  canvas#myChart {
+    max-width: 320px !important;
+  }
+
+  canvas#monthlyChart {
+    max-width: 300px !important;
+    min-height: 250px;
+    max-height: 350px;
+  }
+
+  .custom-legend {
+    flex-direction: column;
+    max-width: 320px;
+    font-size: 0.85rem;
+  }
+
+  .transaction-box {
+    padding: 0.8rem;
+    max-width: 320px;
+  }
+
+  .info-section {
+    padding: 0 5px;
+  }
+
+  .info-card {
+    max-width: 100%;
+    padding: 0.8rem;
+  }
+
+  .info-card h1 {
+    font-size: 1.2rem;
+  }
+
+  .info-card p {
+    font-size: 0.85rem;
+  }
+
+  .qr-image {
+    width: 250px;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1023px) {
+  body {
+    padding: 70px 20px 20px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .stats-container {
+    gap: 1.5rem;
+  }
+
+  .stat-box {
+    width: 130px;
+    max-width: 130px;
+  }
+
+  canvas#myChart {
+    max-width: 450px !important;
+  }
+
+  canvas#monthlyChart {
+    max-width: 450px !important;
+    min-height: 300px;
+    max-height: 400px;
+  }
+
+  .info-card {
+    max-width: 400px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content-wrapper {
+    max-width: 800px;
+  }
+
+  body {
+    padding: 80px 30px 30px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .stats-container {
+    gap: 2rem;
+  }
+
+  .stat-box {
+    width: 140px;
+    max-width: 140px;
+  }
+
+  .info-card {
+    max-width: 450px;
+  }
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
 <body>
   <div class="top-nav">
-    <div class="nav-item active" data-tab="tab4">
-      <i class="fas fa-list"></i>
-      <span>Giao dịch</span>
-    </div>
-    <div class="nav-item" data-tab="tab1">
-      <i class="fas fa-table"></i>
-      <span>Thống kê</span>
-    </div>
-    <div class="nav-item" data-tab="tab2">
-      <i class="fas fa-chart-bar"></i>
-      <span>Biểu đồ</span>
-    </div>
-    <div class="nav-item" data-tab="tab3">
-      <i class="fas fa-info-circle"></i>
-      <span>Giới thiệu</span>
-    </div>
+    <div class="nav-item active" data-tab="tab1"><i class="fas fa-list"></i><span>Giao dịch</span></div>
+    <div class="nav-item" data-tab="tab2"><i class="fas fa-table"></i><span>Thống kê</span></div>
+    <div class="nav-item" data-tab="tab3"><i class="fas fa-chart-bar"></i><span>Biểu đồ</span></div>
+    <div class="nav-item" data-tab="tab4"><i class="fas fa-info-circle"></i><span>Giới thiệu</span></div>
+    <div class="nav-item" data-tab="tab5"><i class="fas fa-money-bill-wave"></i><span>Chi tiêu tháng</span></div>
   </div>
 
   <div class="content-wrapper">
-    <!-- Tab 4: Giao dịch -->
-    <div id="tab4" class="tab-content active">
+    <div id="tab1" class="tab-content active">
       <h1>GIAO DỊCH TRONG NGÀY</h1>
-      <p class="notification  notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
+      <p class="notification">Vui lòng chọn ngày và ấn "Lọc" để xem dữ liệu.</p>
+      <div id="errorMessageTab1" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+      <div id="successMessageTab1" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+      <div id="loadingTab1" style="display: none; text-align: center; margin: 1rem 0;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+      </div>
       <div class="input-group">
         Ngày: <input type="date" id="transactionDate">
         <button id="fetchTransactionsBtn">Lọc</button>
+        <button id="addTransactionBtn">Thêm</button>
       </div>
       <div class="stats-container" id="dailySummary">
-        <div class="stat-box income">
-          <div class="title">Tổng thu nhập</div>
-          <div class="amount">0đ</div>
-        </div>
-        <div class="stat-box expense">
-          <div class="title">Tổng chi tiêu</div>
-          <div class="amount">0đ</div>
-        </div>
-        <div class="stat-box balance">
-          <div class="title">Số dư</div>
-          <div class="amount">0đ</div>
-        </div>
+        <div class="stat-box income"><div class="title">Tổng thu nhập</div><div class="amount">0đ</div></div>
+        <div class="stat-box expense"><div class="title">Tổng chi tiêu</div><div class="amount">0đ</div></div>
+        <div class="stat-box balance"><div class="title">Số dư</div><div class="amount">0đ</div></div>
       </div>
-      <div class="transactions-list" id="transactionsContainer">
-        <!-- Giao dịch sẽ được hiển thị ở đây -->
-      </div>
-      <div class="pagination" id="paginationControls">
-        <button id="prevPageBtn">Trang trước</button>
-        <button id="nextPageBtn">Trang sau</button>
+      <div class="transactions-list" id="transactionsContainer"></div>
+      <div id="pagination" style="text-align: center; margin-top: 1rem;">
+        <button id="prevPage" disabled>Trang trước</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage">Trang sau</button>
       </div>
     </div>
 
-    <!-- Tab 1: Thống kê -->
-    <div id="tab1" class="tab-content">
-      <h1>THỐNG KÊ</h1>
+    <div id="tab2" class="tab-content">
+      <h1>THỐNG KẾ</h1>
       <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
+      <div id="errorMessageTab2" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+      <div id="successMessageTab2" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+      <div id="loadingTab2" style="display: none; text-align: center; margin: 1rem 0;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+      </div>
       <div class="input-group">
         Từ: <input type="date" id="startDate"> 
         Đến: <input type="date" id="endDate"> 
         <button id="fetchDataBtn">Lọc</button>
       </div>
       <div class="stats-container" id="statsContainer">
-        <div class="stat-box income">
-          <div class="title">Tổng thu nhập</div>
-          <div class="amount">0đ</div>
-        </div>
-        <div class="stat-box expense">
-          <div class="title">Tổng chi tiêu</div>
-          <div class="amount">0đ</div>
-        </div>
-        <div class="stat-box balance">
-          <div class="title">Số dư</div>
-          <div class="amount">0đ</div>
-        </div>
+        <div class="stat-box income"><div class="title">Tổng thu nhập</div><div class="amount">0đ</div></div>
+        <div class="stat-box expense"><div class="title">Tổng chi tiêu</div><div class="amount">0đ</div></div>
+        <div class="stat-box balance"><div class="title">Số dư</div><div class="amount">0đ</div></div>
       </div>
       <div class="chart-container">
         <h1>BIỂU ĐỒ CHI TIÊU</h1>
@@ -865,40 +781,28 @@
       <div class="custom-legend" id="customLegend"></div>
     </div>
 
-    <!-- Tab 2: Biểu đồ -->
-    <div id="tab2" class="tab-content">
+    <div id="tab3" class="tab-content">
       <h1>BIỂU ĐỒ THU CHI THEO THÁNG</h1>
       <p class="notification">Vui lòng chọn khoảng thời gian và ấn "Lọc" để xem dữ liệu.</p>
+      <div id="errorMessageTab3" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+      <div id="successMessageTab3" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+      <div id="loadingTab3" style="display: none; text-align: center; margin: 1rem 0;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+      </div>
       <div class="input-group">
         Từ: 
         <select id="startMonth">
-          <option value="1">Tháng 1</option>
-          <option value="2">Tháng 2</option>
-          <option value="3">Tháng 3</option>
-          <option value="4">Tháng 4</option>
-          <option value="5">Tháng 5</option>
-          <option value="6">Tháng 6</option>
-          <option value="7">Tháng 7</option>
-          <option value="8">Tháng 8</option>
-          <option value="9">Tháng 9</option>
-          <option value="10">Tháng 10</option>
-          <option value="11">Tháng 11</option>
-          <option value="12">Tháng 12</option>
+          <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+          <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+          <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
+          <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
         </select>
         Đến: 
         <select id="endMonth">
-          <option value="1">Tháng 1</option>
-          <option value="2">Tháng 2</option>
-          <option value="3">Tháng 3</option>
-          <option value="4">Tháng 4</option>
-          <option value="5">Tháng 5</option>
-          <option value="6">Tháng 6</option>
-          <option value="7">Tháng 7</option>
-          <option value="8">Tháng 8</option>
-          <option value="9">Tháng 9</option>
-          <option value="10">Tháng 10</option>
-          <option value="11">Tháng 11</option>
-          <option value="12">Tháng 12</option>
+          <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+          <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+          <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
+          <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
         </select>
         <button id="fetchMonthlyDataBtn">Lọc</button>
       </div>
@@ -908,21 +812,16 @@
       </div>
     </div>
 
-    <!-- Tab 3: Giới thiệu -->
-    <div id="tab3" class="tab-content">
+    <div id="tab4" class="tab-content">
       <h1>GIỚI THIỆU</h1>
       <div class="info-section">
         <div class="info-card">
           <h1>Về MiniApp</h1>
-          <p class="custom-text">
-            Miniapp tài chính trên Telegram giúp bạn theo dõi thu nhập và chi tiêu dễ dàng. Dựa vào dữ liệu trong Google Sheet nó sẽ hiển thị danh sách giao dịch trong ngày, biểu đồ chi tiêu theo phân loại chi tiết và biểu đồ thu nhập – chi tiêu hàng tháng ngay trong Telegram. 
-          </p>
+          <p class="custom-text">Miniapp tài chính trên Telegram giúp bạn theo dõi thu nhập và chi tiêu dễ dàng. Dựa vào dữ liệu trong Google Sheet nó sẽ hiển thị danh sách giao dịch trong ngày, biểu đồ chi tiêu theo phân loại chi tiết và biểu đồ thu nhập – chi tiêu hàng tháng ngay trong Telegram.</p>
         </div>
         <div class="info-card">
           <h1>Ủng hộ</h1>
-          <p class="custom-text">
-            Nếu bạn thấy nó hữu ích, hãy ủng hộ mình một ly cà phê để có thêm động lực duy trì và phát triển nhé!
-          </p>
+          <p class="custom-text">Nếu bạn thấy nó hữu ích, hãy ủng hộ mình một ly cà phê để có thêm động lực duy trì và phát triển nhé!</p>
           <p><i class="fas fa-university" style="color: var(--accent-color);"></i><strong>Ngân hàng:</strong> TMCP Sài Gòn – Hà Nội (SHB)</p>
           <p><i class="fas fa-user" style="color: var(--accent-color);"></i><strong>Chủ tài khoản:</strong> Hoang Manh Hung</p>
           <p><i class="fas fa-credit-card" style="color: var(--accent-color);"></i><strong>Số tài khoản:</strong> 6666.6789.9999</p>
@@ -937,18 +836,107 @@
         <div class="info-card">
           <h1>Liên hệ</h1>
           <div class="contact-columns">
-            <div class="contact-column">
-              <p><i class="fas fa-user" style="color: var(--primary-color);"></i><strong>Người tạo:</strong> <span class="highlight-color">Hoàng Hùng</span></p>
-              <p><i class="fab fa-telegram-plane" style="color: var(--primary-color);"></i><strong>Telegram:</strong> <a href="https://t.me/masterhmh" target="_blank">@masterhmh</a></p>
-              <p><i class="fab fa-facebook" style="color: var(--primary-color);"></i><strong>Facebook:</strong> <a href="https://facebook.com/masterhmh" target="_blank">facebook.com/masterhmh</a></p>
-              <p><i class="fas fa-envelope" style="color: var(--primary-color);"></i><strong>Email:</strong> <a href="mailto:hoanghung@gmail.com">hoanghung@gmail.com</a></p>
-            </div>
+            <p><i class="fas fa-user" style="color: var(--primary-color);"></i><strong>Người tạo:</strong> <span class="highlight-color">Hoàng Hùng</span></p>
+            <p><i class="fab fa-telegram-plane" style="color: var(--primary-color);"></i><strong>Telegram:</strong> <a href="https://t.me/masterhmh" target="_blank">@masterhmh</a></p>
+            <p><i class="fab fa-facebook" style="color: var(--primary-color);"></i><strong>Facebook:</strong> <a href="https://facebook.com/masterhmh" target="_blank">facebook.com/masterhmh</a></p>
+            <p><i class="fas fa-envelope" style="color: var(--primary-color);"></i><strong>Email:</strong> <a href="/cdn-cgi/l/email-protection#bdd0dccec9d8cfd5d0d5fddad0dcd4d193ded2d0"><span class="__cf_email__" data-cfemail="84e9e5f7f0e1f6ece9ecc4e3e9e5ede8aae7ebe9">[email&#160;protected]</span></a></p>
           </div>
         </div>
       </div>
     </div>
+
+    <div id="tab5" class="tab-content">
+      <h1>CHI TIÊU TRONG THÁNG</h1>
+      <p class="notification">Vui lòng chọn tháng và ấn "Lọc" để xem dữ liệu.</p>
+      <div id="errorMessageTab5" style="color: red; text-align: center; display: none; margin-bottom: 1rem;"></div>
+      <div id="successMessageTab5" style="color: green; text-align: center; display: none; margin-bottom: 1rem;"></div>
+      <div id="loadingTab5" style="display: none; text-align: center; margin: 1rem 0;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+      </div>
+      <div class="input-group">
+        Tháng: 
+        <select id="expenseMonth">
+          <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+          <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+          <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
+          <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+        </select>
+        <button id="fetchMonthlyExpensesBtn">Lọc</button>
+      </div>
+      <div class="stats-container" id="monthlyExpenseSummary">
+        <div class="stat-box income"><div class="title">Tổng thu nhập</div><div class="amount">0đ</div></div>
+        <div class="stat-box expense"><div class="title">Tổng chi tiêu</div><div class="amount">0đ</div></div>
+        <div class="stat-box balance"><div class="title">Số dư</div><div class="amount">0đ</div></div>
+      </div>
+      <div class="transactions-list" id="monthlyExpensesContainer"></div>
+      <div id="paginationMonthly" style="text-align: center; margin-top: 1rem;">
+        <button id="prevPageMonthly" disabled>Trang trước</button>
+        <span id="pageInfoMonthly"></span>
+        <button id="nextPageMonthly">Trang sau</button>
+      </div>
+    </div>
   </div>
 
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h2>Chỉnh sửa giao dịch</h2>
+      <div id="editError" class="error-message"></div>
+      <form id="editForm">
+        <input type="hidden" id="editTransactionId">
+        <label for="editDate">Ngày (dd/MM):</label>
+        <input type="text" id="editDate" required pattern="\d{1,2}/\d{1,2}" placeholder="dd/MM">
+        <label for="editContent">Nội dung:</label>
+        <input type="text" id="editContent" required>
+        <label for="editAmount">Số tiền:</label>
+        <input type="number" id="editAmount" min="0" required>
+        <label for="editType">Phân loại:</label>
+        <select id="editType" required>
+          <option value="Thu nhập">Thu nhập</option>
+          <option value="Chi tiêu">Chi tiêu</option>
+        </select>
+        <label for="editCategory">Phân loại chi tiết:</label>
+        <select id="editCategory" required></select>
+        <label for="editNote">Ghi chú (nếu có):</label>
+        <textarea id="editNote"></textarea>
+        <div class="btn-group">
+          <button type="button" class="cancel-btn" onclick="closeEditForm()">Hủy</button>
+          <button type="submit" class="save-btn">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <h2>Thêm giao dịch mới</h2>
+      <div id="addError" class="error-message"></div>
+      <form id="addForm">
+        <label for="addDate">Ngày (dd/MM):</label>
+        <input type="text" id="addDate" required pattern="\d{1,2}/\d{1,2}" placeholder="dd/MM">
+        <label for="addContent">Nội dung:</label>
+        <input type="text" id="addContent" required>
+        <label for="addAmount">Số tiền:</label>
+        <input type="number" id="addAmount" min="0" required>
+        <label for="addType">Phân loại:</label>
+        <select id="addType" required>
+          <option value="Thu nhập">Thu nhập</option>
+          <option value="Chi tiêu">Chi tiêu</option>
+        </select>
+        <label for="addCategory">Phân loại chi tiết:</label>
+        <select id="addCategory" required></select>
+        <label for="addNote">Ghi chú (nếu có):</label>
+        <textarea id="addNote"></textarea>
+        <div class="btn-group">
+          <button type="button" class="cancel-btn" onclick="closeAddForm()">Hủy</button>
+          <button type="submit" class="save-btn">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="script.js"></script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92afdf2c8f256775',t:'MTc0Mzc1OTkxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const apiUrl = urlParams.get('api');
@@ -968,106 +956,110 @@
       document.querySelector(`.nav-item[data-tab="${tabId}"]`).classList.add('active');
     };
 
-    window.fetchData = async function() {
-      const startDateInput = document.getElementById('startDate').value;
-      const endDateInput = document.getElementById('endDate').value;
-      console.log("Fetching data from: " + startDateInput + " to: " + endDateInput);
-      if (!startDateInput || !endDateInput) {
-        alert("Vui lòng chọn khoảng thời gian!");
-        return;
-      }
-      const startDate = new Date(startDateInput);
-      const endDate = new Date(endDateInput);
-      if (startDate > endDate) {
-        alert("Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
-        return;
-      }
+   window.fetchData = async function() {
+  const startDateInput = document.getElementById('startDate').value;
+  const endDateInput = document.getElementById('endDate').value;
+  console.log("Fetching data from: " + startDateInput + " to: " + endDateInput);
+  if (!startDateInput || !endDateInput) {
+    alert("Vui lòng chọn khoảng thời gian!");
+    return;
+  }
+  const startDate = new Date(startDateInput);
+  const endDate = new Date(endDateInput);
+  if (startDate > endDate) {
+    alert("Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
+    return;
+  }
 
-      try {
-        const financialResponse = await fetch(`${apiUrl}?action=getFinancialSummary&startDate=${startDateInput}&endDate=${endDateInput}&sheetId=${sheetId}`);
-        const financialData = await financialResponse.json();
-        console.log("Financial data received: ", financialData);
-        if (financialData.error) {
-          throw new Error(financialData.error);
-        }
-        updateFinancialData(financialData);
+  try {
+    const financialResponse = await fetch(`${apiUrl}?action=getFinancialSummary&startDate=${startDateInput}&endDate=${endDateInput}&sheetId=${sheetId}`);
+    const financialData = await financialResponse.json();
+    console.log("Financial data received: ", financialData);
+    if (financialData.error) {
+      throw new Error(financialData.error);
+    }
+    updateFinancialData(financialData);
 
-        const chartResponse = await fetch(`${apiUrl}?action=getChartData&startDate=${startDateInput}&endDate=${endDateInput}&sheetId=${sheetId}`);
-        const chartData = await chartResponse.json();
-        console.log("Chart data received: ", chartData);
-        if (chartData.error) {
-          throw new Error(chartData.error);
-        }
-        updateChartData(chartData);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-        alert("Lỗi khi lấy dữ liệu: " + error.message);
-        updateFinancialData({ error: true });
-      }
-    };
+    const chartResponse = await fetch(`${apiUrl}?action=getChartData&startDate=${startDateInput}&endDate=${endDateInput}&sheetId=${sheetId}`);
+    const chartData = await chartResponse.json();
+    console.log("Chart data received: ", chartData);
+    if (chartData.error) {
+      throw new Error(chartData.error);
+    }
+    updateChartData(chartData);
+  } catch (error) {
+    console.error("Error fetching data: ", error);
+    alert("Lỗi khi lấy dữ liệu: " + error.message);
+    updateFinancialData({ error: true });
+  }
+};
 
     function updateFinancialData(data) {
-      console.log("Updating financial data with: ", data);
-      const container = document.getElementById('statsContainer');
+    console.log("Updating financial data with: ", data);
+    const container = document.getElementById('statsContainer');
 
-      if (!data || data.error) {
+    // Nếu không có dữ liệu hoặc có lỗi, hiển thị mặc định
+    if (!data || data.error) {
         console.log("No data or error detected");
         container.innerHTML = `
-          <div class="stat-box income">
-            <div class="title">Tổng thu nhập</div>
-            <div class="amount">Không có dữ liệu</div>
-          </div>
-          <div class="stat-box expense">
-            <div class="title">Tổng chi tiêu</div>
-            <div class="amount">Không có dữ liệu</div>
-          </div>
-          <div class="stat-box balance">
-            <div class="title">Số dư</div>
-            <div class="amount">Không có dữ liệu</div>
-          </div>
+            <div class="stat-box income">
+                <div class="title">Tổng thu nhập</div>
+                <div class="amount">Không có dữ liệu</div>
+            </div>
+            <div class="stat-box expense">
+                <div class="title">Tổng chi tiêu</div>
+                <div class="amount">Không có dữ liệu</div>
+            </div>
+            <div class="stat-box balance">
+                <div class="title">Số dư</div>
+                <div class="amount">Không có dữ liệu</div>
+            </div>
         `;
         return;
-      }
-
-      const totalIncome = Number(data.income) || 0;
-      const totalExpense = Number(data.expense) || 0;
-
-      if (totalIncome === 0 && totalExpense === 0) {
-        container.innerHTML = `
-          <div class="stat-box income">
-            <div class="title">Tổng thu nhập</div>
-            <div class="amount">Không có dữ liệu</div>
-          </div>
-          <div class="stat-box expense">
-            <div class="title">Tổng chi tiêu</div>
-            <div class="amount">Không có dữ liệu</div>
-          </div>
-          <div class="stat-box balance">
-            <div class="title">Số dư</div>
-            <div class="amount">Không có dữ liệu</div>
-          </div>
-        `;
-        return;
-      }
-
-      const balance = totalIncome - totalExpense;
-
-      container.innerHTML = `
-        <div class="stat-box income">
-          <div class="title">Tổng thu nhập</div>
-          <div class="amount">${totalIncome.toLocaleString('vi-VN')}đ</div>
-        </div>
-        <div class="stat-box expense">
-          <div class="title">Tổng chi tiêu</div>
-          <div class="amount">${totalExpense.toLocaleString('vi-VN')}đ</div>
-        </div>
-        <div class="stat-box balance">
-          <div class="title">Số dư</div>
-          <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
-        </div>
-      `;
     }
 
+    // Lấy giá trị từ dữ liệu, mặc định là 0 nếu không có
+    const totalIncome = Number(data.income) || 0;  // Nếu không có thu nhập, đặt là 0
+    const totalExpense = Number(data.expense) || 0;  // Nếu không có chi tiêu, đặt là 0
+
+    // Nếu cả thu nhập và chi tiêu đều là 0, hiển thị "Không có dữ liệu"
+    if (totalIncome === 0 && totalExpense === 0) {
+        container.innerHTML = `
+            <div class="stat-box income">
+                <div class="title">Tổng thu nhập</div>
+                <div class="amount">Không có dữ liệu</div>
+            </div>
+            <div class="stat-box expense">
+                <div class="title">Tổng chi tiêu</div>
+                <div class="amount">Không có dữ liệu</div>
+            </div>
+            <div class="stat-box balance">
+                <div class="title">Số dư</div>
+                <div class="amount">Không có dữ liệu</div>
+            </div>
+        `;
+        return;
+    }
+
+    // Tính số dư nếu có ít nhất một giá trị khác 0
+    const balance = totalIncome - totalExpense;
+
+    // Cập nhật giao diện với dữ liệu thực tế
+    container.innerHTML = `
+        <div class="stat-box income">
+            <div class="title">Tổng thu nhập</div>
+            <div class="amount">${totalIncome.toLocaleString('vi-VN')}đ</div>
+        </div>
+        <div class="stat-box expense">
+            <div class="title">Tổng chi tiêu</div>
+            <div class="amount">${totalExpense.toLocaleString('vi-VN')}đ</div>
+        </div>
+        <div class="stat-box balance">
+            <div class="title">Số dư</div>
+            <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
+        </div>
+    `;
+}
     function updateChartData(response) {
       if (response.error) {
         alert(response.error);
@@ -1173,301 +1165,279 @@
     }
 
     window.fetchMonthlyData = async function() {
-      const startMonth = parseInt(document.getElementById('startMonth').value);
-      const endMonth = parseInt(document.getElementById('endMonth').value);
-      const year = new Date().getFullYear();
-      console.log("Fetching monthly data from month: " + startMonth + " to: " + endMonth);
-      if (startMonth > endMonth) {
+    const startMonth = parseInt(document.getElementById('startMonth').value);
+    const endMonth = parseInt(document.getElementById('endMonth').value);
+    const year = new Date().getFullYear();
+    console.log("Fetching monthly data from month: " + startMonth + " to: " + endMonth);
+    if (startMonth > endMonth) {
         alert("Tháng bắt đầu không thể lớn hơn tháng kết thúc!");
         return;
-      }
+    }
 
-      try {
+    try {
         const response = await fetch(`${apiUrl}?action=getMonthlyData&year=${year}&sheetId=${sheetId}`);
         const monthlyData = await response.json();
         console.log("Monthly data received: ", monthlyData);
         if (monthlyData.error) {
-          throw new Error(monthlyData.error);
+            throw new Error(monthlyData.error);
         }
 
+        // Tạo mảng đầy đủ 12 tháng, điền dữ liệu từ API, nếu không có thì điền 0
         const fullYearData = Array.from({ length: 12 }, (_, i) => {
-          const month = i + 1;
-          const existingData = monthlyData.find(item => item.month === month);
-          return existingData || { month, income: 0, expense: 0 };
+            const month = i + 1;
+            const existingData = monthlyData.find(item => item.month === month);
+            return existingData || { month, income: 0, expense: 0 };
         });
 
+        // Lọc dữ liệu từ startMonth đến endMonth, đảm bảo tất cả các tháng trong khoảng đều có mặt
         const filteredData = Array.from({ length: endMonth - startMonth + 1 }, (_, i) => {
-          const month = startMonth + i;
-          const existingData = fullYearData.find(item => item.month === month);
-          return existingData || { month, income: 0, expense: 0 };
+            const month = startMonth + i;
+            const existingData = fullYearData.find(item => item.month === month);
+            return existingData || { month, income: 0, expense: 0 };
         });
 
         updateMonthlyChart(filteredData);
-      } catch (error) {
+    } catch (error) {
         console.error("Error fetching monthly data: ", error);
         alert("Lỗi khi lấy dữ liệu biểu đồ tháng: " + error.message);
+        // Nếu có lỗi, hiển thị tất cả các tháng từ startMonth đến endMonth với giá trị 0
         const filteredData = Array.from({ length: endMonth - startMonth + 1 }, (_, i) => ({
-          month: startMonth + i,
-          income: 0,
-          expense: 0
+            month: startMonth + i,
+            income: 0,
+            expense: 0
         }));
         updateMonthlyChart(filteredData);
-      }
-    };
+    }
+};
 
-    function updateMonthlyChart(filteredData) {
-      console.log("Updating monthly chart with data: ", filteredData);
-      const ctx = document.getElementById('monthlyChart').getContext('2d');
-      if (window.monthlyChart && typeof window.monthlyChart.destroy === 'function') {
+function updateMonthlyChart(filteredData) {
+    console.log("Updating monthly chart with data: ", filteredData);
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    if (window.monthlyChart && typeof window.monthlyChart.destroy === 'function') {
         window.monthlyChart.destroy();
-      }
+    }
 
-      if (!filteredData || filteredData.length === 0) {
+    if (!filteredData || filteredData.length === 0) {
         window.monthlyChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['Không có dữ liệu'],
+            type: 'bar',
+            data: {
+                labels: ['Không có dữ liệu'],
+                datasets: [
+                    { label: 'Thu nhập', data: [0], backgroundColor: '#10B981' },
+                    { label: 'Chi tiêu', data: [0], backgroundColor: '#EF4444' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 1,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: 'Số tiền (đ)', font: { size: 14 } }, 
+                        ticks: { font: { size: 12 } } 
+                    },
+                    x: { 
+                        title: { display: true, text: 'Tháng', font: { size: 14 } }, 
+                        ticks: { font: { size: 12 } } 
+                    }
+                },
+                plugins: {
+                    legend: { display: true, labels: { font: { size: 12 } } },
+                    tooltip: {
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ`;
+                            }
+                        }
+                    },
+                    datalabels: { display: false }
+                }
+            }
+        });
+        document.getElementById('monthlyLegend').innerHTML = '<div>Không có dữ liệu</div>';
+        return;
+    }
+
+    const labels = filteredData.map(item => `Tháng ${item.month}`);
+    const incomes = filteredData.map(item => item.income);
+    const expenses = filteredData.map(item => item.expense);
+
+    window.monthlyChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
             datasets: [
-              { label: 'Thu nhập', data: [0], backgroundColor: '#10B981' },
-              { label: 'Chi tiêu', data: [0], backgroundColor: '#EF4444' }
+                { label: 'Thu nhập', data: incomes, backgroundColor: '#10B981', borderColor: '#10B981', borderWidth: 1 },
+                { label: 'Chi tiêu', data: expenses, backgroundColor: '#EF4444', borderColor: '#EF4444', borderWidth: 1 }
             ]
-          },
-          options: {
+        },
+        options: {
             responsive: true,
             maintainAspectRatio: true,
             aspectRatio: 1,
             scales: {
-              y: { 
-                beginAtZero: true, 
-                title: { display: true, text: 'Số tiền (đ)', font: { size: 14 } }, 
-                ticks: { font: { size: 12 } } 
-              },
-              x: { 
-                title: { display: true, text: 'Tháng', font: { size: 14 } }, 
-                ticks: { font: { size: 12 } } 
-              }
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Số tiền (đ)', font: { size: 14 } },
+                    ticks: {
+                        callback: function(value) { return value.toLocaleString('vi-VN') + 'đ'; },
+                        font: { size: 12 }
+                    }
+                },
+                x: {
+                    title: { display: true, text: 'Tháng', font: { size: 14 } },
+                    ticks: {
+                        font: { size: 10 },
+                        maxRotation: 45,
+                        minRotation: 45,
+                        autoSkip: false // Đảm bảo không bỏ qua nhãn nào
+                    }
+                }
             },
             plugins: {
-              legend: { display: true, labels: { font: { size: 12 } } },
-              tooltip: {
-                titleFont: { size: 12 },
-                bodyFont: { size: 12 },
-                callbacks: {
-                  label: function(tooltipItem) {
-                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ`;
-                  }
+                legend: { display: true, labels: { font: { size: 12 } } },
+                tooltip: {
+                    titleFont: { size: 12 },
+                    bodyFont: { size: 12 },
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ`;
+                        }
+                    }
+                },
+                datalabels: {
+                    display: true,
+                    align: 'end',
+                    anchor: 'end',
+                    formatter: (value) => value.toLocaleString('vi-VN') + 'đ',
+                    color: '#1F2A44',
+                    font: { weight: 'bold', size: 12 }
                 }
-              },
-              datalabels: { display: false }
             }
-          }
-        });
-        document.getElementById('monthlyLegend').innerHTML = '<div>Không có dữ liệu</div>';
-        return;
-      }
-
-      const labels = filteredData.map(item => `Tháng ${item.month}`);
-      const incomes = filteredData.map(item => item.income);
-      const expenses = filteredData.map(item => item.expense);
-
-      window.monthlyChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            { label: 'Thu nhập', data: incomes, backgroundColor: '#10B981', borderColor: '#10B981', borderWidth: 1 },
-            { label: 'Chi tiêu', data: expenses, backgroundColor: '#EF4444', borderColor: '#EF4444', borderWidth: 1 }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 1,
-          scales: {
-            y: {
-              beginAtZero: true,
-              title: { display: true, text: 'Số tiền (đ)', font: { size: 14 } },
-              ticks: {
-                callback: function(value) { return value.toLocaleString('vi-VN') + 'đ'; },
-                font: { size: 12 }
-              }
-            },
-            x: {
-              title: { display: true, text: 'Tháng', font: { size: 14 } },
-              ticks: {
-                font: { size: 10 },
-                maxRotation: 45,
-                minRotation: 45,
-                autoSkip: false
-              }
-            }
-          },
-          plugins: {
-            legend: { display: true, labels: { font: { size: 12 } } },
-            tooltip: {
-              titleFont: { size: 12 },
-              bodyFont: { size: 12 },
-              callbacks: {
-                label: function(tooltipItem) {
-                  return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toLocaleString('vi-VN')}đ`;
-                }
-              }
-            },
-            datalabels: {
-              display: true,
-              align: 'end',
-              anchor: 'end',
-              formatter: (value) => value.toLocaleString('vi-VN') + 'đ',
-              color: '#1F2A44',
-              font: { weight: 'bold', size: 12 }
-            }
-          }
         }
-      });
+    });
 
-      const monthlyLegend = document.getElementById('monthlyLegend');
-      monthlyLegend.innerHTML = '';
-      const column = document.createElement('div');
-      column.className = 'monthly-column';
+    const monthlyLegend = document.getElementById('monthlyLegend');
+    monthlyLegend.innerHTML = '';
+    const column = document.createElement('div'); // Chỉ tạo 1 cột duy nhất
+    column.className = 'monthly-column';
 
-      filteredData.forEach(item => {
+    // Liệt kê tất cả các tháng theo thứ tự
+    filteredData.forEach(item => {
         const difference = item.income - item.expense;
         const diffClass = difference >= 0 ? 'positive' : 'negative';
         const diffIcon = difference >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
         const monthItem = document.createElement('div');
         monthItem.className = 'month-item';
         monthItem.innerHTML = `
-          <h3>Tháng ${item.month}:</h3>
-          <p><span class="color-box" style="background-color: #10B981;"></span>Tổng thu nhập: <strong>${item.income.toLocaleString('vi-VN')}đ</strong></p>
-          <p><span class="color-box" style="background-color: #EF4444;"></span>Tổng chi tiêu: <strong>${item.expense.toLocaleString('vi-VN')}đ</strong></p>
-          <p><i class="fas ${diffIcon} difference-icon ${diffClass}"></i>Chênh lệch: <span class="difference ${diffClass}"><strong>${difference.toLocaleString('vi-VN')}đ</strong></span></p>
+            <h3>Tháng ${item.month}:</h3>
+            <p><span class="color-box" style="background-color: #10B981;"></span>Tổng thu nhập: <strong>${item.income.toLocaleString('vi-VN')}đ</strong></p>
+            <p><span class="color-box" style="background-color: #EF4444;"></span>Tổng chi tiêu: <strong>${item.expense.toLocaleString('vi-VN')}đ</strong></p>
+            <p><i class="fas ${diffIcon} difference-icon ${diffClass}"></i>Chênh lệch: <span class="difference ${diffClass}"><strong>${difference.toLocaleString('vi-VN')}đ</strong></span></p>
         `;
         column.appendChild(monthItem);
-      });
+    });
 
-      monthlyLegend.appendChild(column);
+    monthlyLegend.appendChild(column); // Chỉ thêm 1 cột vào monthlyLegend
+}
+
+  window.fetchTransactions = async function() {
+  const transactionDate = document.getElementById('transactionDate').value;
+  console.log("Fetching transactions for date: " + transactionDate);
+  if (!transactionDate) {
+    alert("Vui lòng chọn ngày để xem giao dịch!");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`);
+    const transactionData = await response.json();
+    console.log("Transaction data received: ", transactionData);
+    if (transactionData.error) {
+      throw new Error(transactionData.error);
     }
-
-    let currentPage = 1;
-    const itemsPerPage = 10;
-    let allTransactions = [];
-
-    window.fetchTransactions = async function() {
-      const transactionDate = document.getElementById('transactionDate').value;
-      console.log("Fetching transactions for date: " + transactionDate);
-      if (!transactionDate) {
-        alert("Vui lòng chọn ngày để xem giao dịch!");
-        return;
-      }
-
-      try {
-        const response = await fetch(`${apiUrl}?action=getTransactionsByDate&date=${transactionDate}&sheetId=${sheetId}`);
-        const transactionData = await response.json();
-        console.log("Transaction data received: ", transactionData);
-        if (transactionData.error) {
-          throw new Error(transactionData.error);
-        }
-        allTransactions = transactionData;
-        currentPage = 1;
-        displayTransactionsPaginated();
-      } catch (error) {
-        console.error("Error fetching transactions: ", error.message);
-        alert("Lỗi khi lấy dữ liệu giao dịch: " + error.message);
-        displayTransactionsPaginated({ error: true });
-      }
-    };
-
-    function displayTransactionsPaginated() {
-      console.log("Dữ liệu nhận được: ", allTransactions);
-      const container = document.getElementById('transactionsContainer');
-      const summaryContainer = document.getElementById('dailySummary');
-      container.innerHTML = '';
-
-      if (!allTransactions || allTransactions.length === 0 || allTransactions.error) {
-        console.log("Không có giao dịch để hiển thị");
-        container.innerHTML = '<div>Không có giao dịch trong ngày này</div>';
-        summaryContainer.innerHTML = `
-          <div class="stat-box income">
-            <div class="title">Tổng thu nhập</div>
-            <div class="amount no-data">Không có dữ liệu</div>
-          </div>
-          <div class="stat-box expense">
-            <div class="title">Tổng chi tiêu</div>
-            <div class="amount no-data">Không có dữ liệu</div>
-          </div>
-          <div class="stat-box balance">
-            <div class="title">Số dư</div>
-            <div class="amount no-data">Không có dữ liệu</div>
-          </div>
-        `;
-        updatePaginationControls();
-        return;
-      }
-
-      let totalIncome = 0;
-      let totalExpense = 0;
-      allTransactions.forEach(item => {
-        if (item.type === 'Thu nhập') {
-          totalIncome += item.amount;
-        } else if (item.type === 'Chi tiêu') {
-          totalExpense += item.amount;
-        }
-      });
-      const balance = totalIncome - totalExpense;
-      summaryContainer.innerHTML = `
-        <div class="stat-box income">
-          <div class="title">Tổng thu nhập</div>
-          <div class="amount">${totalIncome.toLocaleString('vi-VN')}đ</div>
-        </div>
-        <div class="stat-box expense">
-          <div class="title">Tổng chi tiêu</div>
-          <div class="amount">${totalExpense.toLocaleString('vi-VN')}đ</div>
-        </div>
-        <div class="stat-box balance">
-          <div class="title">Số dư</div>
-          <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
-        </div>
-      `;
-
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedData = allTransactions.slice(startIndex, endIndex);
-
-      paginatedData.forEach(item => {
-        const transactionBox = document.createElement('div');
-        transactionBox.className = 'transaction-box';
-        const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
-        const typeClass = item.type === 'Thu nhập' ? 'income' : 'expense';
-        transactionBox.innerHTML = `
-          <div style="display: flex; justify-content: space-between; width: 100%;">
-            <div style="flex: 1;">
-              <div class="date">${item.date}</div>
-              <div class="amount" style="color: ${amountColor}">${item.amount.toLocaleString('vi-VN')}đ</div>
-              <div class="content">Nội dung: ${item.content}${item.note ? ` (${item.note})` : ''}</div>
-            </div>
-            <div style="flex: 1; text-align: right;">
-              <div class="type ${typeClass}">Phân loại: ${item.type}</div>
-              <div class="category">Phân loại chi tiết: ${item.category}</div>
-            </div>
-          </div>
-        `;
-        container.appendChild(transactionBox);
-      });
-
-      updatePaginationControls();
+    displayTransactions(transactionData);
+  } catch (error) {
+    console.error("Error fetching transactions: ", error.message);
+    alert("Lỗi khi lấy dữ liệu giao dịch: " + error.message);
+    displayTransactions({ error: true });
+  }
+};
+    
+   function displayTransactions(data) {
+  console.log("Dữ liệu nhận được: ", data);
+  const container = document.getElementById('transactionsContainer');
+  const summaryContainer = document.getElementById('dailySummary');
+  container.innerHTML = '';
+  if (data.error || !data || data.length === 0) {
+    console.log("Không có giao dịch để hiển thị");
+    container.innerHTML = '<div>Không có giao dịch trong ngày này</div>';
+    summaryContainer.innerHTML = `
+      <div class="stat-box income">
+        <div class="title">Tổng thu nhập</div>
+        <div class="amount no-data">Không có dữ liệu</div>
+      </div>
+      <div class="stat-box expense">
+        <div class="title">Tổng chi tiêu</div>
+        <div class="amount no-data">Không có dữ liệu</div>
+      </div>
+      <div class="stat-box balance">
+        <div class="title">Số dư</div>
+        <div class="amount no-data">Không có dữ liệu</div>
+      </div>
+    `;
+    return;
+  }
+  let totalIncome = 0;
+  let totalExpense = 0;
+  data.forEach(item => {
+    if (item.type === 'Thu nhập') {
+      totalIncome += item.amount;
+    } else if (item.type === 'Chi tiêu') {
+      totalExpense += item.amount;
     }
-
-    function updatePaginationControls() {
-      const prevBtn = document.getElementById('prevPageBtn');
-      const nextBtn = document.getElementById('nextPageBtn');
-      const totalPages = Math.ceil(allTransactions.length / itemsPerPage);
-
-      prevBtn.disabled = currentPage === 1;
-      nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-
-      prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
-      nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
-    }
+  });
+  const balance = totalIncome - totalExpense;
+  summaryContainer.innerHTML = `
+    <div class="stat-box income">
+      <div class="title">Tổng thu nhập</div>
+      <div class="amount">${totalIncome.toLocaleString('vi-VN')}đ</div>
+    </div>
+    <div class="stat-box expense">
+      <div class="title">Tổng chi tiêu</div>
+      <div class="amount">${totalExpense.toLocaleString('vi-VN')}đ</div>
+    </div>
+    <div class="stat-box balance">
+      <div class="title">Số dư</div>
+      <div class="amount">${balance.toLocaleString('vi-VN')}đ</div>
+    </div>
+  `;
+  console.log("Hiển thị giao dịch: ", data.slice(0, 10));
+  const limitedData = data.slice(0, 10);
+  limitedData.forEach(item => {
+    const transactionBox = document.createElement('div');
+    transactionBox.className = 'transaction-box';
+    const amountColor = item.type === 'Thu nhập' ? '#10B981' : '#EF4444';
+    const typeClass = item.type === 'Thu nhập' ? 'income' : 'expense';
+    transactionBox.innerHTML = `
+  <div style="display: flex; justify-content: space-between; width: 100%;">
+    <div style="flex: 1;">
+      <div class="date">${item.date}</div>
+      <div class="amount" style="color: ${amountColor}">${item.amount.toLocaleString('vi-VN')}đ</div>
+      <div class="content">Nội dung: ${item.content}${item.note ? ` (${item.note})` : ''}</div>
+    </div>
+    <div style="flex: 1; text-align: right;">
+      <div class="type ${typeClass}">Phân loại: ${item.type}</div>
+      <div class="category">Phân loại chi tiết: ${item.category}</div>
+    </div>
+  </div>
+`;
+    container.appendChild(transactionBox);
+  });
+}
 
     function getCurrentMonthRange() {
       const now = new Date();
@@ -1501,21 +1471,6 @@
       fetchMonthlyDataBtn.addEventListener('click', window.fetchMonthlyData);
       const fetchTransactionsBtn = document.getElementById('fetchTransactionsBtn');
       fetchTransactionsBtn.addEventListener('click', window.fetchTransactions);
-      const prevPageBtn = document.getElementById('prevPageBtn');
-      const nextPageBtn = document.getElementById('nextPageBtn');
-      prevPageBtn.addEventListener('click', function() {
-        if (currentPage > 1) {
-          currentPage--;
-          displayTransactionsPaginated();
-        }
-      });
-      nextPageBtn.addEventListener('click', function() {
-        const totalPages = Math.ceil(allTransactions.length / itemsPerPage);
-        if (currentPage < totalPages) {
-          currentPage++;
-          displayTransactionsPaginated();
-        }
-      });
       const { startDate, endDate } = getCurrentMonthRange();
       document.getElementById('startDate').value = startDate;
       document.getElementById('endDate').value = endDate;
